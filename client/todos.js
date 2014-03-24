@@ -136,7 +136,7 @@ Template.nodes.nodes = function () {
   if (!parent) {
     parent = Session.get('dfmea_id');
    }
-  console.log(parent);
+
   //var sel = {ParentCategory: parent};
 
   //shut down tagging
@@ -144,6 +144,7 @@ Template.nodes.nodes = function () {
   //if (tag_filter)
   //  sel.tags = tag_filter;
   var nodelist=Nodes.find({parentCategory: parent});
+  console.log(nodelist);
    return nodelist;
 };
 
@@ -226,6 +227,113 @@ Template.node_item.events(okCancelEvents(
       Session.set('editing_addtag', null);
     }
   }));
+
+////////// Render item data /////////
+
+Template.render_item_data.tag_objs = function () {
+  var node_id = this._id;
+  return _.map(this.tags || [], function (tag) {
+    return {node_id: node_id, tag: tag};
+  });
+};
+
+Template.render_item_data.done_class = function () {
+  return this.done ? 'done' : '';
+};
+
+Template.render_item_data.done_checkbox = function () {
+  return this.done ? 'checked="checked"' : '';
+};
+
+Template.render_item_data.editing = function () {
+  return Session.equals('editing_itemname', this._id);
+};
+
+Template.render_item_data.adding_tag = function () {
+  return Session.equals('editing_addtag', this._id);
+};
+
+Template.render_item_data.subCategories = function() {
+  var temp=this.subcategories;
+  return temp;
+}
+
+Template.render_item_data.events({
+ // 'click .check': function () {
+ //   Nodes.update(this._id, {$set: {done: !this.done}});
+ // },
+
+
+// need to fix destroy to check that it's not the only item at its level 
+// and then to destroy the entire subtree
+// probably need 'undo' and a confirm
+  'click .destroy': function () {
+    Nodes.remove(this._id);
+  },
+
+//  'click .addtag': function (evt, tmpl) {
+//    Session.set('editing_addtag', this._id);
+//    Deps.flush(); // update DOM before focus
+//    activateInput(tmpl.find("#edittag-input"));
+//  },
+
+  'dblclick .display .node-text': function (evt, tmpl) {
+    Session.set('editing_itemname', this._id);
+    Deps.flush(); // update DOM before focus
+    activateInput(tmpl.find("#node-input"));
+  },
+
+  'click .remove': function (evt) {
+    var tag = this.tag;
+    var id = this.node_id;
+
+    evt.target.parentNode.style.opacity = 0;
+    // wait for CSS animation to finish
+    Meteor.setTimeout(function () {
+      Nodes.update({_id: id}, {$pull: {tags: tag}});
+    }, 300);
+  }
+});
+
+Template.render_item_data.events(okCancelEvents(
+  '#node-input',
+  {
+    ok: function (value) {
+      Nodes.update(this._id, {$set: {content: value}});
+      Session.set('editing_itemname', null);
+    },
+    cancel: function () {
+      Session.set('editing_itemname', null);
+    }
+  }));
+
+Template.render_item_data.events(okCancelEvents(
+  '#edittag-input',
+  {
+    ok: function (value) {
+      Nodes.update(this._id, {$addToSet: {tags: value}});
+      Session.set('editing_addtag', null);
+    },
+    cancel: function () {
+      Session.set('editing_addtag', null);
+    }
+  }));
+
+Template.render_item_data.helpers ({
+  doChildren : function() {
+    var ID = this._id;
+    return Nodes.find({parentCategory: ID});
+  },
+  debug2: function() {
+    console.log(this._id);
+  }
+});
+
+Template.render_pane.debug=function(){
+  console.log(this);
+  return true;
+}
+
 
 ////////// Tag Filter //////////
 
