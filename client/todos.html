@@ -50,8 +50,8 @@
       </div>
     {{else}}
  <!--     <div class="destroy"></div>-->
-      <div class="display-{{categoryName}}">
-        <div class="node-{{categoryName}}-text">{{content}}
+      <div class="display display-{{categoryName}}">
+        <div class="node-text node-{{categoryName}}-text">{{content}}
         </div>
       </div>
       {{#if subCategories}}
@@ -64,8 +64,6 @@
     {{/if}}
   </div>
 </template>
-
-
 
 <template name="node_item">
   <li class="node {{done_class}}">
@@ -97,41 +95,6 @@
       {{/if}}-->
     </div>
   </li>
-</template>
-
-<template name="displayFMEAbody">
-  {{#each node}}
-    {{#if parent_category}}
-      <div class="node-{{category_class}}">
-        {{#if rating_type}}
-          <div class="children-wrapper-{{rating_type}}">
-            <div class="content-{{rating_type}}">
-            {{rating}}
-            </div>
-          </div>
-        {{/if}}
-      {{#if subcategories}}
-        <div class="children-wrapper-{{category_class}}">
-        {{> displayFMEAbody}}
-        </div>
-      {{/if}}
-      </div>
-    {{else}}
-      {{>displayFMEAbody}}
-    {{/if}}
-  {{/each}} 
-</template>
-
-<template name="processContent">
-  {{#if editing}}
-        <div class="edit content-{{category_class}}">
-          <input id="item-input" type="text" value="{{content}}" />
-        </div>
-  {{else}}
-    <div class="content-{{category_class}}">
-    {{content}}
-    </div>
-  {{/if}}
 </template>
 
 <template name="tag_filter">

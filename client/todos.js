@@ -94,15 +94,6 @@ Template.lists.loading = function () {
   return !dfmeaHandle.ready();
 };
 
-/*Template.lists.helpers({
-  gomer:  function (){
-    var temp=DFMEAs.findOne({name:"Test FMEA 1"});
-    console.log(temp);
-    console.log(temp._id);
-    Session.set("dfmea_id",temp);
-    console.log("in gomer");
-    return temp;
-}});*/
 
 ////////// nodes //////////
 var nodesHandle=null;
@@ -146,7 +137,6 @@ Template.nodes.nodes = function () {
   //if (tag_filter)
   //  sel.tags = tag_filter;
   var nodelist=Nodes.find({parentCategory: parent});
-  console.log(nodelist);
   return nodelist;
 };
 
@@ -260,6 +250,22 @@ Template.render_item_data.subCategories = function() {
   return temp;
 }
 
+Template.render_item_data.events(okCancelEvents(
+  '#new-node',
+  {
+    ok: function (text, evt) {
+      var tag = Session.get('tag_filter');
+      Nodes.insert({
+        categoryName:  "BOGUS--needs fixed for new item entry",
+        content: text,
+        parentCategory: Session.get('dfmea_id'),
+        subCategory:[],
+        timestamp: (new Date()).getTime(),
+      });
+      evt.target.value = '';
+    }
+  }));
+
 Template.render_item_data.events({
  // 'click .check': function () {
  //   Nodes.update(this._id, {$set: {done: !this.done}});
@@ -280,6 +286,8 @@ Template.render_item_data.events({
 //  },
 
   'dblclick .display .node-text': function (evt, tmpl) {
+    console.log("Captured event");
+    console.log(this._id);
     Session.set('editing_itemname', this._id);
     Deps.flush(); // update DOM before focus
     activateInput(tmpl.find("#node-input"));
@@ -325,28 +333,8 @@ Template.render_item_data.helpers ({
   doChildren : function() {
     var ID = this._id;
     return Nodes.find({parentCategory: ID});
-  },
-  debug2: function() {
-    console.log(this._id);
-  },
-  firstCause: function() {
-    if (firstCauseFlag && (this.categoryName === "FailureCause"))
-      {
-        firstCauseFlag=false;
-        retDIV=[];
-        return true;
-      }
-      else
-      {
-        return false;
-      };
-    },
-  notCause: function () {
-    return !(this.categoryName === "FailureCause");
-  },
-  isSEV: function() {
-    return (this.categoryName === "SEV");
   }
+ 
 });
 
 ////////// Tag Filter //////////
