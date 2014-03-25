@@ -10,3 +10,10 @@ spiderable
 jquery
 preserve-inputs
 insecure
+accounts-ui
+accounts-base
+accounts-password
+accounts-google
+accounts-facebook
+accounts-twitter
+bootstrap-3

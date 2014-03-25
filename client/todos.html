@@ -3,17 +3,19 @@
 </head>
 
 <body>
-  <div id="top-tag-filter">
-    {{> tag_filter}}
+{{> navHeader}}
+
+<div class="relative-wrapper">
+ <div id="side-pane">
+    {{> lists}}
   </div>
+
 
   <div id="main-pane">
     {{> nodes}}
   </div>
 
-  <div id="side-pane">
-    {{> lists}}
-  </div>
+</div>
 </body>
 
 <template name="lists">
@@ -29,9 +31,9 @@
       {{#if loading}}
         Loading...
       {{else}}
-        <div id="new-node-box">
+        {{!--+<div id="new-node-box">
           <input type="text" id="new-node" placeholder="New item" />
-        </div>
+        </div>--}}
         <div class="DFMEA_pane">
          {{#each nodes}}
             {{> render_item_data}}
@@ -49,10 +51,14 @@
         <input id="node-input" type="text" value="{{content}}" />
       </div>
     {{else}}
- <!--     <div class="destroy"></div>-->
       <div class="display display-{{categoryName}}">
         <div class="node-text node-{{categoryName}}-text">{{content}}
         </div>
+        {{#if iconsAllowed}}
+          <div class="icon-set">
+            {{> iconography}}
+          </div>
+        {{/if}}
       </div>
       {{#if subCategories}}
         <div class="{{categoryName}}-pane">
@@ -60,6 +66,16 @@
             {{> render_item_data}}
          {{/each}}
          </div>
+      {{else}}
+        </div>
+        <div class="DET-pane">
+          <div class="node-RPN">
+            <div class="display display-RPN">
+              <div class="node-RPN-text">
+                {{RPNcalc}}
+              </div>
+             </div>
+          </div>
       {{/if}}
     {{/if}}
   </div>
@@ -106,4 +122,22 @@
       </div>
     {{/each}}
   </div>
+</template>
+
+<template name="iconography">
+  {{#if canAdd}}
+    <button type="button" class="btn btn-success btn-xs"><span class="glyphicon glyphicon-plus" </span></button>
+  {{/if}}
+  {{#if canCopy}}
+    <button type="button" class="btn btn-success btn-xs"><span class="glyphicon glyphicon-heart"></span></button>
+  {{/if}}
+  {{#if canClone}}
+    <button type="button" class="btn btn-success btn-xs" disabled="disabled"><span class="glyphicon glyphicon-link"></span></button>
+  {{/if}}
+  {{#if canDelete}}
+    <button type="button" class="btn btn-danger btn-xs"><span class="glyphicon glyphicon-trash"></span></button>
+  {{/if}}
+  {{#if canHide}}
+    <button type="button" class="btn btn-success btn-xs" disabled="disabled"><span class="glyphicon glyphicon-eye-close"></span></button>
+  {{/if}}
 </template>

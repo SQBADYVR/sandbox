@@ -64,7 +64,7 @@ h3 {
 .display-DesignFunction{
     display: inline-block;
     vertical-align: top;
-    width: 120px;
+    width: 138px;
     height:100%;
 }
 
@@ -89,7 +89,7 @@ h3 {
 .display-FailureMode {
     display: inline-block;
     vertical-align: top;
-    width: 120px;
+    width: 138px;
     height:100%;
 }
 
@@ -119,7 +119,7 @@ h3 {
 .display-FailureEffect {
     display: inline-block;
     vertical-align: top;
-    width: 120px;
+    width: 138px;
     height:100%;
 }
 
@@ -151,7 +151,7 @@ h3 {
 .display-FailureCause {
     display: inline-block;
     vertical-align: top;
-    width: 120px;
+    width: 138px;
     height:100%;
 }
 
@@ -204,12 +204,14 @@ h3 {
     display: block;
     height:100%;
     padding-left: 3px;
+    text-align: center;
 }
 
 .node-OCC-text{
     display: block;
     height:100%;
     padding-left: 3px;
+    text-align: center;
 }
 .node-OCC {
     min-height: 100%;
@@ -266,14 +268,8 @@ h3 {
     height:100%;
     padding-left: 3px;
     vertical-align: top;
+    text-align: center;
 }
-
-
-
-
-
-
-
 
 #top-tag-filter, #main-pane, #side-pane, #bottom-pane {
     position: absolute;
@@ -310,6 +306,10 @@ h3 {
     background: #eee;
     border-right: 1px solid #999;
     background: #ddd;
+}
+
+.relative-wrapper {
+   
 }
 
 .tag {
@@ -435,6 +435,7 @@ h3 {
 
 #item-list .done .node-text {
     text-decoration: line-through;
+    position: absolute;
     color: #999;
 }
 
@@ -498,3 +499,12 @@ h3 {
     width: 80px;
 }
 
+.glyphicon {
+    color: #ffffff;
+}
+
+.icon-set {
+   padding: 2px;
+   position: absolute;
+   bottom: 0px;
+}

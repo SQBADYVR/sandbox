@@ -7,6 +7,12 @@ DFMEAs= new Meteor.Collection("dfmeas");
 Nodes = new Meteor.Collection("nodes");
 firstCauseFlag=false;
 lastWasCause=false;
+var canCopy=false;
+var canDelete=false;
+var canClone=false;
+var canAdd=false;
+var canHide=false;
+
 
 Session.set('dfmea_id',null);
 
@@ -332,11 +338,65 @@ Template.render_item_data.events(okCancelEvents(
 Template.render_item_data.helpers ({
   doChildren : function() {
     var ID = this._id;
-    return Nodes.find({parentCategory: ID});
+    return Nodes.find({parentCategory: ID})
+  },
+  RPNcalc: function() {
+    var RPN=parseInt(this.content);
+    var currentNode=this;
+    do 
+    {
+      if (currentNode.categoryName==="OCC") {
+        RPN*=parseInt(currentNode.content);
+      }
+      currentNode=Nodes.findOne({_id: currentNode.parentCategory});
+    }
+    while (!(currentNode.categoryName === "SEV"));
+    RPN*=parseInt(currentNode.content);
+    return RPN;
+    },
+  iconsAllowed: function() {
+    canCopy=false;
+    canDelete=false;
+    canClone=false;
+    canAdd=false;
+    canHide=false;
+
+    //  Turn on variables by field.
+    //  Then turn off by user permissions
+    var columnType=this.categoryName;
+    if ((columnType=== "DesignFunction")||(columnType === "FailureMode") || (columnType === "FailureEffect") || (columnType === "FailureCause"))
+    {
+      canCopy=true;
+      canDelete=true;
+      canClone=true;
+      canAdd=true;
+      canHide=true;
+      }
+
+    // turn off by user permissions
+
+    return canCopy||canDelete||canClone||canAdd||canHide;
   }
- 
 });
 
+Template.iconography.helpers ({
+  canAdd : function() {
+    console.log(canAdd);
+    return (canAdd);
+  },
+  canCopy : function() {
+    return (canCopy);
+  },
+  canClone : function() {
+    return (canClone);
+  },
+  canDelete : function() {
+    return (canDelete);
+  },
+  canHide : function() {
+    return (canHide);
+  }
+});
 ////////// Tag Filter //////////
 
 // Pick out the unique tags from all nodes in current list.
