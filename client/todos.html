@@ -43,32 +43,55 @@
 </template>
 
 <template name="render_item_data">
- <div class="node-{{categoryName}}">
+  <div class="node-{{categoryName}}">
     {{#if editing}}
       <div class="edit">
         <input id="node-input" type="text" value="{{content}}" />
       </div>
     {{else}}
-      <div class="destroy"></div>
-      <div class="display">
+ <!--     <div class="destroy"></div>-->
+      <div class="display-{{categoryName}}">
         <div class="node-{{categoryName}}-text">{{content}}
         </div>
       </div>
       {{#if subCategories}}
         <div class="{{categoryName}}-pane">
-        {{debug2}}
-          {{#each doChildren}}
+         {{#each doChildren}}
+            {{#if notCause}}
             {{> render_item_data}}
-          {{/each}}
-        </div>
+            {{/if}}
+         {{/each}}
+         </div>
+      {{else}}
+        {{#if isSEV}}
+          <div class="SEV-pane">
+          {{> renderSEVPane}}
+          </div>
+        {{/if}}
       {{/if}}
     {{/if}}
-    </div>
   </div>
 </template>
 
-<template name="render_pane">
-  {{content}}
+<template name="renderSEVPane">
+   <div class="node-{{categoryName}}">
+    {{#if editing}}
+      <div class="edit">
+        <input id="node-input" type="text" value="{{content}}" />
+      </div>
+    {{else}}
+ <!--     <div class="destroy"></div>-->
+      <div class="display-{{categoryName}}">
+        <div class="node-{{categoryName}}-text">{{content}}
+        </div>
+      </div>
+      <div class="{{categoryName}}-pane">
+      {{#each doChildren}}
+         {{> render_item_data}}
+      {{/each}}
+      </div>
+    {{/if}}
+  </div>
 </template>
 
 <template name="node_item">

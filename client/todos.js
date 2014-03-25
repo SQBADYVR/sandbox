@@ -5,6 +5,8 @@
 Lists = new Meteor.Collection("lists");
 DFMEAs= new Meteor.Collection("dfmeas");
 Nodes = new Meteor.Collection("nodes");
+firstCauseFlag=false;
+lastWasCause=false;
 
 Session.set('dfmea_id',null);
 
@@ -145,7 +147,7 @@ Template.nodes.nodes = function () {
   //  sel.tags = tag_filter;
   var nodelist=Nodes.find({parentCategory: parent});
   console.log(nodelist);
-   return nodelist;
+  return nodelist;
 };
 
 Template.node_item.tag_objs = function () {
@@ -326,13 +328,36 @@ Template.render_item_data.helpers ({
   },
   debug2: function() {
     console.log(this._id);
+  },
+  firstCause: function() {
+    if (firstCauseFlag && (this.categoryName === "FailureCause"))
+      {
+        firstCauseFlag=false;
+        retDIV=[];
+        return true;
+      }
+      else
+      {
+        return false;
+      };
+    },
+  notCause: function () {
+    return !(this.categoryName === "FailureCause");
+  },
+  isSEV: function() {
+    return (this.categoryName === "SEV");
   }
 });
 
-Template.render_pane.debug=function(){
-  console.log(this);
-  return true;
-}
+
+
+Template.renderSEVPane.helpers ({
+  doChildren: function() {
+    var ID=this.parentCateogry;
+    console.log(ID);
+    return Nodes.find({parentCategory:ID, categoryName: "FailureCause"});
+  }
+});
 
 
 ////////// Tag Filter //////////
