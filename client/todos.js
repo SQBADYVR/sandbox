@@ -349,17 +349,6 @@ Template.render_item_data.helpers ({
   }
 });
 
-
-
-Template.renderSEVPane.helpers ({
-  doChildren: function() {
-    var ID=this.parentCateogry;
-    console.log(ID);
-    return Nodes.find({parentCategory:ID, categoryName: "FailureCause"});
-  }
-});
-
-
 ////////// Tag Filter //////////
 
 // Pick out the unique tags from all nodes in current list.

@@ -88,14 +88,17 @@ Meteor.startup(function () {
             timestamp: timestamp
           });
           timestamp +=1;
+          Nodes.update({_id: effects_id}, {$push: {subcategories: SEV_id}});
           for ( l = 0; l < Math.floor(Math.random() * 5) + 1; l++) {
             var cause_id = Nodes.insert({
               categoryName: "FailureCause",
-              parentCategory: effects_id,
+              parentCategory: SEV_id,
               subcategories: [],
               content: "Something broke " + l,
               timestamp: timestamp
             });
+            timestamp+=1;
+            Nodes.update({_id: SEV_id}, {$push: {subcategories: cause_id}});
             var OCC_id=Nodes.insert({
               categoryName: "OCC",
               parentCategory: cause_id,
@@ -104,25 +107,26 @@ Meteor.startup(function () {
               timestamp: timestamp
             });
             timestamp+=1;
-            Nodes.update({_id: effects_id}, {$push: {subcategories: cause_id}});
+            Nodes.update({_id: cause_id}, {$push: {subcategories: OCC_id}});
             for ( m = 0; m < 1; m++) {
               var detec_id = Nodes.insert({
                 categoryName: "DesignControl",
-                parentCategory: cause_id,
+                parentCategory: OCC_id,
                 subcategories: [],
                 content: "Test regimen that has a long-ass list of stuff like thermal shock, shake and bake, drop testing, and other stuff" + m,
                 timestamp: timestamp
               });
-              timestamp+=1;              
+              timestamp+=1;   
+              Nodes.update({_id: OCC_id}, {$push: {subcategories: detec_id }});       
              var DET_id=Nodes.insert({
               categoryName: "DET",
-              parentCategory: cause_id,
+              parentCategory: detec_id,
               subcategories: [],
               content: (Math.floor(Math.random()*10)+1),
               timestamp: timestamp
               });
              timestamp+=1;
-             Nodes.update({_id: cause_id}, {$push: {subcategories: detec_id }});
+             Nodes.update({_id: detec_id}, {$push: {subcategories: DET_id }});
             };
           };
         };
