@@ -12,8 +12,15 @@ var canDelete=false;
 var canClone=false;
 var canAdd=false;
 var canHide=false;
-var treeSchema = ["DesignFunction","FailureMode","DesignEffect","SEV","DesignCause","OCC","DesignControl","DET"];
+var firstFMode, firstEffect,firstCause;
+var FModeCount, EffectCount, CauseCount;
+
+var treeSchema = ["DesignFunction","FailureMode","FailureEffect","SEV","FailureCause","OCC","DesignControl","DET"];
 var promptText = ["New function", "Failure Mode", "Effect of Failure", 10, "Potential Cause", 10, "Design Controls", 10 ];
+LastCategory="";
+NeedTRFlag=false;
+
+
 
 
 var createSubtree=function(parentNodeID) {
@@ -45,6 +52,37 @@ var createSubtree=function(parentNodeID) {
     oldParentID=newNode._id;
   };
 }
+
+var countLeaf=function(currNode) {
+  
+  var Leafcounter=0;
+ 
+  switch (currNode.categoryName) {
+    case treeSchema[4]:
+    case treeSchema[5]:
+    case treeSchema[6] :
+    case treeSchema[7] : {
+      return 1;
+    }
+    case treeSchema[3]: {
+      return currNode.subcategories.length;
+    }
+    case treeSchema[0]:
+    case treeSchema[1]:
+    case treeSchema[2]: {
+      var kids=Nodes.findOne({_id: currNode._id}).subcategories;
+      var toprun=kids.length;
+      for (var i=0; i < toprun; i++) {
+        var temp=Nodes.findOne({_id:kids[i]});
+        Leafcounter+=countLeaf(temp);
+      }
+      return Leafcounter;
+      }
+    default: {
+
+    } return 0;
+}
+        };
 
 
 Session.set('dfmea_id',null);
@@ -255,6 +293,114 @@ Template.node_item.events(okCancelEvents(
       Session.set('editing_addtag', null);
     }
   }));
+
+/// Template for rendering table 
+
+Template.render_table.helpers ({
+  doChildren : function() {
+    var ID = this._id;
+    console.log("in doChildren");
+    console.log(this)
+
+    console.log(treeSchema.indexOf(this.categoryName));
+    console.log(treeSchema.indexOf(LastCategory));
+    if (treeSchema.indexOf(this.categoryName) > treeSchema.indexOf(LastCategory)) //dived deeper in tree
+      {
+        NeedTRFlag=false;
+      }
+      else
+      {
+        NeedTRFlag=true;
+      }
+    LastCategory=this.categoryName;
+    var parentCategory=this.categoryName;
+    var children=this.subcategories;
+    var retval = Nodes.find({parentCategory:ID});
+    return retval;
+  },
+  debug: function() {
+    console.log(this._id);
+  },
+  firstCause: function() {
+    if (firstCause)
+    {
+      firstCause=false;
+      CauseCount-=1;
+      return true;
+    }
+    else
+    {
+      CauseCount-=1;
+      return false;
+    }
+  },
+  lastCause: function () {
+    return (CauseCount === 0);
+  },
+  firstEffect: function() {
+    EffectCount-=1;
+    if (firstEffect)
+      {
+      firstEffect=false;
+      return true;
+     }
+    else
+      return false;
+  },
+  lastEffect: function() {
+   return (EffectCount===0)
+  },
+  firstFM: function() {
+    FModeCount-=1;
+    if (firstFMode) {
+      firstFMode=false;
+      return true;
+    }
+    else return false;
+  },
+  lastFM: function() {
+    return (FModeCount===0)
+  },
+  poppedUp: function() {
+    if (NeedTRFlag)
+    {
+      NeedTRFLag=false;
+      return true;
+    }
+    else return false;
+  },
+  countDETs: function() {  //counts all the DETs (actually Causes) that are children of this node
+    var temp = countLeaf(this);
+    console.log(temp);
+    return temp;
+  },
+
+  RPNcalc: function() {
+    var RPN=parseInt(this.content);
+    var currentNode=this;
+    var rememberNode=this._id;
+    console.log("In RPN calc");
+    console.log(this);
+    do 
+    {
+      if (currentNode.categoryName==="OCC") {
+        RPN*=parseInt(currentNode.content);
+      }
+      currentNode=Nodes.findOne({_id: currentNode.parentCategory});
+      console.log("RPN traversing");
+      console.log(RPN);
+    }
+    while (!(currentNode.categoryName === "SEV"));
+    RPN*=parseInt(currentNode.content);
+    Nodes.findOne({_id:rememberNode});
+    return RPN;
+    }
+});
+
+
+
+
+
 
 ////////// Render item data /////////
 

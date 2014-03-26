@@ -24,7 +24,7 @@ Meteor.startup(function () {
 //                    "FailureMode"
 //                    "FailureEffect"
 //                    "SEV"
-//                    "Classification"
+//             not implemented yet       "Classification"
 //                    "FailureCause"
 //                    "OCC"
 //                    "DesignControl"
