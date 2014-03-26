@@ -255,6 +255,7 @@ h3 {
     vertical-align: top;
     width: 20px;
     display: inline-block;
+    border-right: 1px solid #333333;
 }
 .DET-pane {
     display: inline-block;
@@ -508,3 +509,11 @@ h3 {
    position: absolute;
    bottom: 0px;
 }
+
+.login-link-text {
+    color: #999;
+}
+
+a.login-link-test:active {
+    color: #ffffff;
+    }

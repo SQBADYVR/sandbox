@@ -12,6 +12,39 @@ var canDelete=false;
 var canClone=false;
 var canAdd=false;
 var canHide=false;
+var treeSchema = ["DesignFunction","FailureMode","DesignEffect","SEV","DesignCause","OCC","DesignControl","DET"];
+var promptText = ["New function", "Failure Mode", "Effect of Failure", 10, "Potential Cause", 10, "Design Controls", 10 ];
+
+
+var createSubtree=function(parentNodeID) {
+  var newNodeCategory=Nodes.findOne({_id:parentNodeID}).categoryName;  
+  var breakFlag=false;
+  var i;
+  for (i=0; !breakFlag && (i<8); i+=1)
+  {
+    if (newNodeCategory === treeSchema[i])
+      breakFlag=true;
+    else
+      breakFlag=false;
+  }
+  i-=1;
+  var timestamp = (new Date()).getTime();
+  //i is now positioned to start making nodes
+  var oldParentID=parentNodeID;
+  for (;i<8;i+=1)
+  {
+    var newNode=Nodes.insert({
+       categoryName: treeSchema[i],
+       parentCategory: oldParentID,
+       subcategories: [],
+       content: promptText[i],
+       timestamp: timestamp 
+    });
+    timestamp+=1;
+    Nodes.update({_id:oldParentID},{$push: {subcategories: newNode._id}});
+    oldParentID=newNode._id;
+  };
+}
 
 
 Session.set('dfmea_id',null);
@@ -56,10 +89,7 @@ Deps.autorun(function () {
     nodesHandle = null;
 });
 
-
-
 //var nodesHandle = null;
-
 
 ////////// Helpers for in-place editing //////////
 
@@ -292,8 +322,6 @@ Template.render_item_data.events({
 //  },
 
   'dblclick .display .node-text': function (evt, tmpl) {
-    console.log("Captured event");
-    console.log(this._id);
     Session.set('editing_itemname', this._id);
     Deps.flush(); // update DOM before focus
     activateInput(tmpl.find("#node-input"));
@@ -367,10 +395,10 @@ Template.render_item_data.helpers ({
     if ((columnType=== "DesignFunction")||(columnType === "FailureMode") || (columnType === "FailureEffect") || (columnType === "FailureCause"))
     {
       canCopy=true;
-      canDelete=true;
+      canDelete=true;  //need to ensure we don't delete if it's the only member.
       canClone=true;
       canAdd=true;
-      canHide=true;
+      canHide=true;  //need to switch icon to eyes open if children are hidden.
       }
 
     // turn off by user permissions
