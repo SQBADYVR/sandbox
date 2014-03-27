@@ -4,24 +4,18 @@
 
 <body>
 {{> navHeader}}
-
 <div class="relative-wrapper">
  <div id="side-pane">
     {{> lists}}
   </div>
-
-
   <div id="main-pane">
     {{> nodes}}
   </div>
-
 </div>
 </body>
 
 <template name="lists">
-
   {{#if loading}}
-
   {{/if}}
 </template>
 
@@ -39,14 +33,55 @@
         <thead></thead>
         <tbody class="DFMEA-table">
         {{#each nodes}}
-            {{> render_table}}
-        {{/each}}
+            <tr>
+            {{>renderDfctn}}
+            </tr>
+         {{/each}}
         </tbody>
         </table>
         </div>
       {{/if}}
     </div>
   {{/if}}
+</template>
+
+
+
+<template name="inject">
+  <div id="inject"></div>
+</template>
+
+
+<template name="renderDfctn">
+  <td class="display-DesignFunction" rowspan="{{countDETs}}">
+  <div class="text-container">
+  {{content}}
+  </div>
+  </td>
+  {{#each doChildren}}
+    {{#if isFirstThing}}
+       {{> renderMode}}
+    {{else}}
+       <tr>
+      {{> renderMode}}
+      </tr>
+    {{/if}}
+  {{/each}}
+</template>
+
+<template name="renderMode">
+  <td class="display-FailureMode" rowspan="{{countDETs}}">
+  {{content}}
+  </td>
+  {{#each doChildren}}
+    {{#if isFirstThing}}
+        {{> renderEffect}}
+    {{else}}
+      <tr>
+      {{> renderEffect}}
+      </tr>
+    {{/if}}
+  {{/each}}
 </template>
 
 <template name="render_item_data">
@@ -86,72 +121,54 @@
   </div>
 </template>
 
-<template name="render_table">
-  <tr class="node-DesignFunction">
-    <td class="display-DesignFunction" rowspan="{{countDETs}}">
-      {{content}}
-        </td>
-        {{#each doChildren}}
-          {{#if poppedUp}}
-          <tr>
-          {{/if}}
-          <td class="display-FailureMode" rowspan="{{countDETs}}">
-          {{content}}
-          </td>
-          {{#each doChildren}}
-            {{#if poppedUp}}
-              <tr>
-            {{/if}}
-            <td class="display-FailureEffect" rowspan="{{countDETs}}">
-            {{content}}
-            </td>
-            {{#each doChildren}}
-              <td class="display-SEV">
-              {{content}}
-              </td>
-              <td class="display-Class">
-              YS
-              </td>
-              {{#each doChildren}}
-                {{#if poppedUp}}
-                  <tr>
-                {{/if}}
-                <td class="display-Cause">
-                {{content}}
-                </td>
-                {{#each doChildren}}
-                  <td class="display-OCC">
-                  {{content}}
-                  </td>
-                  {{#each doChildren}}
-                    <td class="display-DesCntrl">
-                    {{content}}  DAD RULES
-                    </td></tr>
-                  
-                  {{/each}}
-                {{/each}}
-              {{/each}}
-            {{/each}}
-          {{/each}}
-        {{/each}}
-</template>
 
-<template name="render_table_stuff">
-  {{#each nodes}}
-      <td rowspan={{countCauses}}>
+
+<template name="renderCause"> 
+  <td class="display-Cause">
+    {{content}}
+  </td>
+  {{#each doChildren}}
+    <td class="display-OCC">
+    {{content}}
+    </td>
+    {{#each doChildren}}
+      <td class="display-DesCntrl">
       {{content}}
       </td>
-      {{#if children}}
-        {{#each doChildren}}
-          {{> render_table_stuff}}
-        {{/each}}
-      {{else}}
-        </tr>
-        <tr>
-      {{/if}}
+      {{#each doChildren}}
+        <td class="display-DET">
+        {{content}}
+        </td>
+        <td class="display-RPN">
+        {{RPNcalc}}
+        </td>
+      {{/each}}
+    {{/each}}
   {{/each}}
 </template>
 
+<template name="renderEffect">
+  <td class="display-FailureEffect" rowspan="{{countDETs}}">
+  {{content}}
+  </td>
+  {{#each doChildren}}
+    <td class="display-SEV">
+    {{content}}
+    </td>
+    <td class="display-Class">
+      YS
+    </td>
+      {{#each doChildren}}
+        {{#if isFirstThing}}
+          {{> renderCause}}
+        {{else}}
+          <tr>
+          {{> renderCause}}
+        {{/if}}
+       {{/each}}
+       </tr>
+  {{/each}}
+</template>
 
 
 <template name="node_item">
