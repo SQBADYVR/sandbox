@@ -8,8 +8,10 @@ Meteor.startup(function () {
         header:[],
         project: null, 
         created: {"userid":timestamp},
-        revised: {"userid":timestamp}
-    });
+        revised: {"userid":timestamp},
+        subcategories: []
+    }
+);
     timestamp += 1; // ensure unique timestamp.
   }
 
@@ -46,20 +48,29 @@ Meteor.startup(function () {
 //    header:       array of {fieldName:content}  entries describing the header for the FMEA
 //    created:      {userid: timestamp} telling who created the FMEA
 //    revised:       array of {userid: timestamp} telling who saved edits to the FMEA
-
+  
 
   if (Nodes.find().count() === 0) {// populate with some data
+      var topNode=Nodes.insert({
+       categoryName: "FMEAroot",
+        parentCategory: dfmea_id,
+        subcategories: [],
+        content: "Root of this DFMEA body",
+        timestamp: timestamp
+     });
+    DFMEAs.update({_id: dfmea_id}, {$push: {subcategories: topNode}});
+    timestamp+=1;
      for ( i = 0; i < Math.floor(Math.random() * 3) + 1; i++) {
       // Insert the functions
       var fctn_id = Nodes.insert({
         categoryName: "DesignFunction",
-        parentCategory: dfmea_id,
+        parentCategory: topNode,
         subcategories: [],
         content: "Design Function " + i,
         timestamp: timestamp
       });
       timestamp+=1;
-      Nodes.update({_id: dfmea_id}, {$push: {subcategories: fctn_id}});
+      Nodes.update({_id: topNode}, {$push: {subcategories: fctn_id}});
       for ( j = 0; j < Math.floor(Math.random() * 3) + 1; j++) {
         var fmode_id = Nodes.insert({
           categoryName: "FailureMode",

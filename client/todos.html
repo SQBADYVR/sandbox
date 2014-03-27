@@ -33,7 +33,7 @@
         <thead></thead>
         <tbody class="DFMEA-table">
         {{#each nodes}}
-            {{>renderDfctn}}
+          {{>renderBeta}}
         {{/each}}
         </tbody>
         </table>
@@ -43,99 +43,45 @@
   {{/if}}
 </template>
 
-<template name="renderDfctn">
- <tr>
-  {{#each doChildren}}
-      {{> renderMode}}
-  {{/each}}
-  </tr>
-</template>
 
-<template name="renderMode">
-{{#if isFirstThing}}
-  <td class="display-DesignFunction" rowspan="{{countParentDETs}}">
-    <div class="text-container">
-    {{parentContent}}
-    </div>
+<template name="renderAlpha">
+  <td rowspan={{countDETs}}>
+  <div class="display-div display-div-{{categoryName}}">
+  {{content}}
+  </div>
   </td>
-  {{#each doChildren}}
-    {{#if isFirstThing}}
-      {{> renderEffect}}
-    {{else}}
-      <tr>
-      {{> renderEffect}}
-      </tr>
-    {{/if}}
-  {{/each}}
-{{/if}}
-</template>
-
-
-<template name="renderCause"> 
-  {{#each doChildren}}
-    {{#if isFirstThing}}
-      <td class="display-SEV">
-      {{parentContent}}
-      </td>
-      <td class="display-Class">
-        YS
-      </td>
-      {{> renderDET}}
-    {{else}}
-        <tr>
-        {{>renderDET}}
-        </tr>
-    {{/if}}
-  {{/each}}
-</template>
-
-<template name="renderDET">
-  <td class="display-Cause">
-  {{Parentcontent}}
-   </td>
-  {{#each doChildren}}
-    <td class="display-OCC">
-    {{content}}
-    </td>
+  {{#if subcategories}}
     {{#each doChildren}}
-      <td class="display-DesCntrl">
-      {{content}}
-      </td>
-      {{#each doChildren}}
-        <td class="display-DET">
-        {{content}}
-        </td>
-        <td class="display-RPN">
-        {{RPNcalc}}
-        </td>
-      {{/each}}
+     {{#if isFirstThing}}
+        {{>  renderAlpha}}
+      {{else}}
+        {{> renderBeta}}
+      {{/if}}
     {{/each}}
-  {{/each}}
+  {{else}}
+  <td class="display-RPN">
+  {{RPNcalc}}
+  </td>
+  {{/if}}
 </template>
 
-<template name="renderSEV">
+<template name="renderBeta">
+  {{#if subcategories}}
   {{#each doChildren}}
+    <tr>
     {{#if isFirstThing}}
-      <td class="display-FailureEffect" rowspan="{{countDETs}}">
-      {{parentContent}}
-      </td> 
-       {{> renderCause}}
+      {{>renderAlpha}}
     {{else}}
-      <tr>
-      {{> renderCause}}
-      </tr>
+      {{> renderAlpha}}
     {{/if}}
+    </tr>
   {{/each}}
+  {{/if}}
 </template>
 
-<template name="renderEffect">
-  {{#each doChildren}} 
-      <td class="display-FailureMode" rowspan="{{countDETs}}">
-      {{parentContent}}
-      </td>
-      {{> renderSEV}}
-  {{/each}}
-</template>
+
+
+
 
 <template name="render_item_data">
   <div class="node-{{categoryName}}">

@@ -82,6 +82,78 @@ var countLeaf=function(currNode) {
 }
         };
 
+Template.renderBeta.helpers ({
+  doChildren : function() {
+    var ID = this._id;
+    console.log("in Beta");
+    console.log(this);
+    console.log(this.categoryName);
+    LastCategory=this.categoryName;
+    var retval = Nodes.find({parentCategory:ID});
+    return retval;
+  },
+  subcategories: function() {
+    console.log("in subcategories");
+    console.log(this.subcategories.length);
+    return this.subcategories.length;
+  },
+  debug:function() {
+    console.log(this._id);
+  },
+  isFirstThing: function() {
+    var newCategory=this.categoryName;
+    console.log(newCategory);
+    console.log(LastCategory);
+    var retval= (treeSchema.indexOf(newCategory)>treeSchema.indexOf(LastCategory));
+    LastCategory=newCategory;
+    console.log(retval);
+    console.log(this._id);
+    return (retval);
+    },
+  countDETs: function() {  //counts all the DETs (actually Causes) that are children of this node
+    var temp = countLeaf(Nodes.findOne({_id:this._id}));
+//    console.log(temp);
+    return temp;
+  }
+});
+
+Template.renderAlpha.helpers ({
+  doChildren : function() {
+    var ID = this._id;
+    console.log("in Alpha");
+    console.log(this);
+    console.log(this.categoryName);
+    LastCategory=this.categoryName;
+    var retval = Nodes.find({parentCategory:ID});
+    return retval;
+  },
+  subcategories: function() {
+    console.log("in subcategories");
+    console.log(this.subcategories.length);
+    return this.subcategories.length;
+  },
+
+  debug:function() {
+    console.log(this._id);
+  },
+  isFirstThing: function() {
+    var newCategory=this.categoryName;
+    console.log(newCategory);
+    console.log(LastCategory);
+    var retval= (treeSchema.indexOf(newCategory)>treeSchema.indexOf(LastCategory));
+    LastCategory=newCategory;
+    console.log(retval);
+    console.log(this._id);
+    return (retval);
+    },
+  countDETs: function() {  //counts all the DETs (actually Causes) that are children of this node
+    console.log(this._id);
+    var temp = countLeaf(Nodes.findOne({_id:this._id}));
+    console.log(temp);
+    return temp;
+  }
+});
+
 
 Session.set('dfmea_id',null);
 
@@ -196,10 +268,10 @@ Template.nodes.events(okCancelEvents(
 Template.nodes.nodes = function () {
   // Determine which nodes to display in main pane,
   // selected based on list_id and tag_filter.
-  var parent=null;
-  if (!parent) {
-    parent = Session.get('dfmea_id');
-   }
+  var rootNode=Session.get('dfmea-id');
+  console.log (rootNode);
+
+  return Nodes.find({parentCategory:rootNode});
 
   //var sel = {ParentCategory: parent};
 
@@ -207,8 +279,6 @@ Template.nodes.nodes = function () {
   //var tag_filter = Session.get('tag_filter');
   //if (tag_filter)
   //  sel.tags = tag_filter;
-  var nodelist=Nodes.find({parentCategory: parent});
-  return nodelist;
 };
 
 Template.node_item.tag_objs = function () {
@@ -291,228 +361,6 @@ Template.node_item.events(okCancelEvents(
     }
   }));
 
-Template.renderDfctn.helpers ({
-  doChildren : function() {
-    var ID = this._id;
-    console.log("in DFCTN");
-    console.log(this);
-    console.log(this.categoryName);
-    LastCategory=this.categoryName;
-    var retval = Nodes.find({parentCategory:ID});
-    return retval;
-  },
-  debug:function() {
-    console.log(this._id);
-  },
-  isFirstThing: function() {
-    var newCategory=this.categoryName;
-    console.log(newCategory);
-    console.log(LastCategory);
-    var retval= (treeSchema.indexOf(newCategory)>treeSchema.indexOf(LastCategory));
-    LastCategory=newCategory;
-    console.log(retval);
-    console.log(this._id);
-    return (retval);
-    },
-  countDETs: function() {  //counts all the DETs (actually Causes) that are children of this node
-    var temp = countLeaf(findOne({_id:this.parentCategory}));
-//    console.log(temp);
-    return temp;
-  }
-});
-
-Template.renderMode.helpers ({
-  doChildren : function() {
-    var ID = this._id;
-    console.log("in Mode");
-    console.log(this);
-    console.log(this.categoryName);
-    var retval = Nodes.find({parentCategory:ID});
-    return retval;
-  },
-  parentContent: function() {
-    var retval =  Nodes.findOne({_id: this.parentCategory}).content;
-    console.log("retmode parentcontent");
-    console.log(this);
-    console.log (Nodes.findOne({_id: this.parentCategory}));
-    console.log (retval);
-    return retval;
-  },
-  debug:function() {
-    console.log(this._id);
-  },
-  isFirstThing: function() {
-    var newCategory=this.categoryName;
-    console.log(newCategory);
-    console.log(LastCategory);
-    var retval= (treeSchema.indexOf(newCategory)>treeSchema.indexOf(LastCategory));
-    LastCategory=newCategory;
-    console.log(retval);
-    console.log(this._id);
-    return (retval);
-    },
-  countParentDETs: function() {  //counts all the DETs (actually Causes) that are children of this node
-    var temp = countLeaf(Nodes.findOne({_id:this.parentCategory}));
-//    console.log(temp);
-    return temp;
-  }
-});
-
-Template.renderEffect.helpers ({
-  doChildren : function() {
-    var ID = this._id;
-    var retval = Nodes.find({parentCategory:ID});
-    return retval;
-  },
-  debug:function() {
-    console.log(this._id);
-  },  
-  parentContent: function() {
-    var retval =  Nodes.findOne({_id: this.parentCategory}).content;
-    console.log (retval);
-    return retval;
-  },
-  isFirstThing: function() {
-    var newCategory=this.categoryName;
-    console.log(newCategory);
-    console.log(LastCategory);
-    var retval= (treeSchema.indexOf(newCategory)>treeSchema.indexOf(LastCategory));
-    LastCategory=newCategory;
-    console.log(retval);
-    console.log(this._id);
-    return (retval);
-    },
-  countDETs: function() {  //counts all the DETs (actually Causes) that are children of this node
-    var temp = countLeaf(this);
-//    console.log(temp);
-    return temp;
-  }
-});
-
-Template.renderCause.helpers ({
-  doChildren : function() {
-    var ID = this._id;
-    var retval = Nodes.find({parentCategory:ID});
-    return retval;
-  },
-  parentContent: function() {
-    var retval =  Nodes.findOne({_id: this.parentCategory}).content;
-    console.log (retval);
-    return retval;
-  },
-  debug:function() {
-    console.log(this._id);
-  },
-  isFirstThing: function() {
-    var newCategory=this.categoryName;
-    console.log(newCategory);
-    console.log(LastCategory);
-    var retval= (treeSchema.indexOf(newCategory)>treeSchema.indexOf(LastCategory));
-    LastCategory=newCategory;
-    console.log(retval);
-    console.log(this._id);
-    return (retval);
-    },
-  countDETs: function() {  //counts all the DETs (actually Causes) that are children of this node
-    var temp = countLeaf(this);
-    console.log(temp);
-    return temp;
-  },
-  RPNcalc: function() {
-    var RPN=parseInt(this.content);
-    var currentNode=this;
-    var rememberNode=this._id;
-    do 
-    {
-      if (currentNode.categoryName==="OCC") {
-        RPN*=parseInt(currentNode.content);
-      }
-      currentNode=Nodes.findOne({_id: currentNode.parentCategory});
-    }
-    while (!(currentNode.categoryName === "SEV"));
-    RPN*=parseInt(currentNode.content);
-    Nodes.findOne({_id:rememberNode});
-    return RPN;
-    }
-});
-
-Template.renderSEV.helpers ({
-  doChildren : function() {
-    var ID = this._id;
-    var retval = Nodes.find({parentCategory:ID});
-    return retval;
-  },
-  parentContent: function() {
-    var retval =  Nodes.findOne({_id: this.parentCategory}).content;
-    console.log (retval);
-    return retval;
-  },
-  debug:function() {
-    console.log(this._id);
-  },
-  isFirstThing: function() {
-    var newCategory=this.categoryName;
-    console.log(newCategory);
-    console.log(LastCategory);
-    var retval= (treeSchema.indexOf(newCategory)>treeSchema.indexOf(LastCategory));
-    LastCategory=newCategory;
-    console.log(retval);
-    console.log(this._id);
-    return (retval);
-    },
-  countDETs: function() {  //counts all the DETs (actually Causes) that are children of this node
-    var temp = countLeaf(this);
-    console.log(temp);
-    return temp;
-  }
-});
-
-Template.renderDET.helpers ({
-  doChildren : function() {
-    var ID = this._id;
-    var retval = Nodes.find({parentCategory:ID});
-    return retval;
-  },
-  parentContent: function() {
-    var retval =  Nodes.findOne({_id: this.parentCategory}).content;
-    console.log (retval);
-    return retval;
-  },
-  debug:function() {
-    console.log(this._id);
-  },
-  isFirstThing: function() {
-    var newCategory=this.categoryName;
-    console.log(newCategory);
-    console.log(LastCategory);
-    var retval= (treeSchema.indexOf(newCategory)>treeSchema.indexOf(LastCategory));
-    LastCategory=newCategory;
-    console.log(retval);
-    console.log(this._id);
-    return (retval);
-    },
-  countDETs: function() {  //counts all the DETs (actually Causes) that are children of this node
-    var temp = countLeaf(this.parentCategory);
-    console.log(temp);
-    return temp;
-  },
-  RPNcalc: function() {
-    var RPN=parseInt(this.content);
-    var currentNode=this;
-    var rememberNode=this._id;
-    do 
-    {
-      if (currentNode.categoryName==="OCC") {
-        RPN*=parseInt(currentNode.content);
-      }
-      currentNode=Nodes.findOne({_id: currentNode.parentCategory});
-    }
-    while (!(currentNode.categoryName === "SEV"));
-    RPN*=parseInt(currentNode.content);
-    Nodes.findOne({_id:rememberNode});
-    return RPN;
-    }
-});
 
 
 
