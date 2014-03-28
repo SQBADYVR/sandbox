@@ -268,10 +268,11 @@ Template.nodes.events(okCancelEvents(
 Template.nodes.nodes = function () {
   // Determine which nodes to display in main pane,
   // selected based on list_id and tag_filter.
-  var rootNode=Session.get('dfmea-id');
-  console.log (rootNode);
+  var parent=null;
 
-  return Nodes.find({parentCategory:rootNode});
+  if (!parent) {
+    parent = Session.get('dfmea_id');
+   }
 
   //var sel = {ParentCategory: parent};
 
@@ -279,7 +280,10 @@ Template.nodes.nodes = function () {
   //var tag_filter = Session.get('tag_filter');
   //if (tag_filter)
   //  sel.tags = tag_filter;
+  var nodelist=Nodes.find({parentCategory: parent});
+  return nodelist;
 };
+
 
 Template.node_item.tag_objs = function () {
   var node_id = this._id;

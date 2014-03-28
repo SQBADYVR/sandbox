@@ -52,34 +52,40 @@
   </td>
   {{#if subcategories}}
     {{#each doChildren}}
-     {{#if isFirstThing}}
-        {{>  renderAlpha}}
+      {{#if isFirstThing}}
+      {{> renderAlpha}}
       {{else}}
-        {{> renderBeta}}
-      {{/if}}
+      {{> renderBeta}}
+      {{/if}}}
     {{/each}}
   {{else}}
-  <td class="display-RPN">
-  {{RPNcalc}}
-  </td>
+    <td>
+    <div class-"display-div display-div-RPN">
+    {{RPNcalc}}
+    </div>
+    </td>
   {{/if}}
 </template>
 
 <template name="renderBeta">
-  {{#if subcategories}}
-  {{#each doChildren}}
-    <tr>
-    {{#if isFirstThing}}
-      {{>renderAlpha}}
-    {{else}}
-      {{> renderAlpha}}
-    {{/if}}
+{{#if subcategories}}
+  {{#if isFirstThing}}
+    <tr class="beta first-row">
+    {{> renderAlpha}}
     </tr>
-  {{/each}}
-  {{/if}}
+  {{else}}
+    <tr class="beta rest-of-rows">
+    {{> renderAlpha}}
+    </tr>
+    {{/if}}
+{{/if}}
 </template>
 
-
+<template name="renderGamma">
+   {{#each doChildren}}
+      {{> renderBeta}}
+    {{/each}}
+</template>
 
 
 
