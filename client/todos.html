@@ -44,41 +44,26 @@
 </template>
 
 
+<!-- paint first row of remaining subtree's table -->
 <template name="renderAlpha">
-  <td rowspan={{countDETs}}>
-  <div class="display-div display-div-{{categoryName}}">
-  {{content}}
-  </div>
-  </td>
+  {{>displayNode}}
   {{#if subcategories}}
-    {{#each doChildren}}
-      {{#if isFirstThing}}
       {{> renderAlpha}}
-      {{else}}
-      {{> renderBeta}}
-      {{/if}}}
-    {{/each}}
-  {{else}}
-    <td>
-    <div class-"display-div display-div-RPN">
-    {{RPNcalc}}
-    </div>
-    </td>
+    {{/with}}
   {{/if}}
 </template>
 
-<template name="renderBeta">
-{{#if subcategories}}
-  {{#if isFirstThing}}
-    <tr class="beta first-row">
-    {{> renderAlpha}}
-    </tr>
-  {{else}}
-    <tr class="beta rest-of-rows">
-    {{> renderAlpha}}
-    </tr>
-    {{/if}}
-{{/if}}
+
+<template name="displayNode">
+<td rowspan="{{countDET}}">
+{{content}}
+</td>
+</template>
+
+<template name-"renderBeta">
+  {{#each doChildren}}
+  {{> renderAlpha subcategory}}
+  ((/each))
 </template>
 
 <template name="renderGamma">

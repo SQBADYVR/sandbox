@@ -1,3 +1,6 @@
+DFMEAs= new Meteor.Collection("dfmeas");
+Nodes = new Meteor.Collection("nodes");
+
 // if the database is empty on server start, create some sample data.
 Meteor.startup(function () {
   var dfmea_id;
