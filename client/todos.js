@@ -96,6 +96,7 @@ Template.processRow.helpers ({
     if (!((this===undefined) || (this ===null)))
     {
       var newNode=Nodes.findOne({_id: this[0]});
+      lastCategory=newNode.categoryName;
       return(newNode.categoryName);
     }
   },
@@ -115,8 +116,44 @@ Template.processRow.helpers ({
     else
     {
      return temp;}
-  }
-});
+  },
+  DETcell: function () {
+    return (lastCategory==="DET");
+  },
+  RPNcalc: function() {
+    var currentNode=Nodes.findOne({_id:this[0]});
+    var RPN=parseInt(currentNode.content);
+    do 
+    {
+      if (currentNode.categoryName==="OCC") {
+        RPN*=parseInt(currentNode.content);
+      }
+      currentNode=Nodes.findOne({_id: currentNode.parentCategory});
+    }
+    while (!(currentNode.categoryName === "SEV"));
+    RPN*=parseInt(currentNode.content);
+    return RPN;
+    },
+  iconsAllowed: function() {
+    canCopy=false;
+    canDelete=false;
+    canClone=false;
+    canAdd=false;
+    canHide=false;
+
+    //  Turn on variables by field.
+    //  Then turn off by user permissions
+    var columnType=this.categoryName;
+    if ((columnType=== "DesignFunction")||(columnType === "FailureMode") || (columnType === "FailureEffect") || (columnType === "FailureCause"))
+    {
+      canCopy=true;
+      canDelete=true;  //need to ensure we don't delete if it's the only member.
+      canClone=true;
+      canAdd=true;
+      canHide=true;  //need to switch icon to eyes open if children are hidden.
+      }
+
+}});
 
 Template.renderAlpha.helpers ({
    stackOfNodes: function() {

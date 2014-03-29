@@ -39,21 +39,12 @@ h3 {
     text-align: center;
 }
 
-body {
-    width: 600px;
-    margin: 40px auto;
-    font-size: 14px;
-    color: #444;
-}
-
 table {
     *border-collapse: collapse; /* IE7 and lower */
     border-spacing: 0;
     border: 1px solid #333333;
     width: 100%;    
 }
-
-
 
 #rounded-corner
 {
@@ -122,17 +113,10 @@ table {
 
 }
 
-.display-SEV {
- 
+.display-SEV, .display-OCC, .display-RPN, .display-DET{
+ text-align:center;
 }
 
-.display-OCC {
-  
-}
-
-.display-DET {
-
-}
 #top-tag-filter, #main-pane, #side-pane, #bottom-pane {
     position: absolute;
     left: 0;
@@ -173,6 +157,7 @@ table {
 .relative-wrapper {
    
 }
+
 
 .tag {
     cursor: pointer;

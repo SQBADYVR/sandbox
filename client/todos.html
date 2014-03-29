@@ -30,7 +30,7 @@
         </div>--}}
         <div class="DFMEA_pane">
         <table id="rounded-corner">
-        <thead>
+        <thead class="fixedheader">
           {{>populateHeader}}
         </thead>
         <tbody class="DFMEA-table">
@@ -72,6 +72,11 @@
     <td rowspan={{countDET}} class="display-{{getNodeType}}">
     {{getNodeContext}}
     </td>
+    {{#if DETcell}}
+    <td class="display-RPN">
+    {{RPNcalc}}
+    </td>
+    {{/if}}
    {{/each}}
 </template>
 
