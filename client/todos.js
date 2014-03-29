@@ -26,16 +26,14 @@ Template.prepping.stuffArray=function() {
   var i;
   rootNode = Nodes.findOne({categoryName: "FMEAroot"});
   currNode=rootNode.subcategories;
-  console.log(currNode);
   for (i=0; i<currNode.length;i++)
     {
-    miniStuff(currNode);
-    currNode.shift;
+    var temp = [currNode[i]]
+    miniStuff(temp);
   }
 };
 
 var miniStuff=function(entryNode){
-    console.log(entryNode);
     var kids=Nodes.findOne({_id: entryNode[0]}).subcategories;
     var i;
     tempStack.push(entryNode);
@@ -109,17 +107,6 @@ var countLeaf=function(currNode) {
         };
 
 Template.processRow.helpers ({
-  displayThis: function() {
-    console.log(this);
-  },
-  newRow: function() {
-    if (NeedTRFlag)
-    {
-      NeedTRFlag=false;
-      return true;
-    }
-    else return false;
-  },
   getNodeContext: function() {
     if (!((this===undefined) || (this ===null)))
     {
@@ -146,10 +133,6 @@ Template.processRow.helpers ({
     else
     {
      return temp;}
-  },
-  checkFlag: function() {
-    console.log("In checkFlag with result "+NeedTRFlag);
-    return NeedTRFlag;
   }
 });
 
@@ -292,239 +275,6 @@ Template.nodes.nodes = function () {
 };
 
 
-Template.node_item.tag_objs = function () {
-  var node_id = this._id;
-  return _.map(this.tags || [], function (tag) {
-    return {node_id: node_id, tag: tag};
-  });
-};
-
-Template.node_item.done_class = function () {
-  return this.done ? 'done' : '';
-};
-
-Template.node_item.done_checkbox = function () {
-  return this.done ? 'checked="checked"' : '';
-};
-
-Template.node_item.editing = function () {
-  return Session.equals('editing_itemname', this._id);
-};
-
-Template.node_item.adding_tag = function () {
-  return Session.equals('editing_addtag', this._id);
-};
-
-Template.node_item.events({
-  'click .check': function () {
-    Nodes.update(this._id, {$set: {done: !this.done}});
-  },
-
-  'click .destroy': function () {
-    Nodes.remove(this._id);
-  },
-
-  'click .addtag': function (evt, tmpl) {
-    Session.set('editing_addtag', this._id);
-    Deps.flush(); // update DOM before focus
-    activateInput(tmpl.find("#edittag-input"));
-  },
-
-  'dblclick .display .node-text': function (evt, tmpl) {
-    Session.set('editing_itemname', this._id);
-    Deps.flush(); // update DOM before focus
-    activateInput(tmpl.find("#node-input"));
-  },
-
-  'click .remove': function (evt) {
-    var tag = this.tag;
-    var id = this.node_id;
-
-    evt.target.parentNode.style.opacity = 0;
-    // wait for CSS animation to finish
-    Meteor.setTimeout(function () {
-      Nodes.update({_id: id}, {$pull: {tags: tag}});
-    }, 300);
-  }
-});
-
-Template.node_item.events(okCancelEvents(
-  '#node-input',
-  {
-    ok: function (value) {
-      Nodes.update(this._id, {$set: {content: value}});
-      Session.set('editing_itemname', null);
-    },
-    cancel: function () {
-      Session.set('editing_itemname', null);
-    }
-  }));
-
-Template.node_item.events(okCancelEvents(
-  '#edittag-input',
-  {
-    ok: function (value) {
-      Nodes.update(this._id, {$addToSet: {tags: value}});
-      Session.set('editing_addtag', null);
-    },
-    cancel: function () {
-      Session.set('editing_addtag', null);
-    }
-  }));
-
-
-
-
-////////// Render item data /////////
-
-Template.render_item_data.tag_objs = function () {
-  var node_id = this._id;
-  return _.map(this.tags || [], function (tag) {
-    return {node_id: node_id, tag: tag};
-  });
-};
-
-Template.render_item_data.done_class = function () {
-  return this.done ? 'done' : '';
-};
-
-Template.render_item_data.done_checkbox = function () {
-  return this.done ? 'checked="checked"' : '';
-};
-
-Template.render_item_data.editing = function () {
-  return Session.equals('editing_itemname', this._id);
-};
-
-Template.render_item_data.adding_tag = function () {
-  return Session.equals('editing_addtag', this._id);
-};
-
-Template.render_item_data.subCategories = function() {
-  var temp=this.subcategories;
-  return temp;
-}
-
-Template.render_item_data.events(okCancelEvents(
-  '#new-node',
-  {
-    ok: function (text, evt) {
-      var tag = Session.get('tag_filter');
-      Nodes.insert({
-        categoryName:  "BOGUS--needs fixed for new item entry",
-        content: text,
-        parentCategory: Session.get('dfmea_id'),
-        subCategory:[],
-        timestamp: (new Date()).getTime(),
-      });
-      evt.target.value = '';
-    }
-  }));
-
-Template.render_item_data.events({
- // 'click .check': function () {
- //   Nodes.update(this._id, {$set: {done: !this.done}});
- // },
-
-
-// need to fix destroy to check that it's not the only item at its level 
-// and then to destroy the entire subtree
-// probably need 'undo' and a confirm
-  'click .destroy': function () {
-    Nodes.remove(this._id);
-  },
-
-//  'click .addtag': function (evt, tmpl) {
-//    Session.set('editing_addtag', this._id);
-//    Deps.flush(); // update DOM before focus
-//    activateInput(tmpl.find("#edittag-input"));
-//  },
-
-  'dblclick .display .node-text': function (evt, tmpl) {
-    Session.set('editing_itemname', this._id);
-    Deps.flush(); // update DOM before focus
-    activateInput(tmpl.find("#node-input"));
-  },
-
-  'click .remove': function (evt) {
-    var tag = this.tag;
-    var id = this.node_id;
-
-    evt.target.parentNode.style.opacity = 0;
-    // wait for CSS animation to finish
-    Meteor.setTimeout(function () {
-      Nodes.update({_id: id}, {$pull: {tags: tag}});
-    }, 300);
-  }
-});
-
-Template.render_item_data.events(okCancelEvents(
-  '#node-input',
-  {
-    ok: function (value) {
-      Nodes.update(this._id, {$set: {content: value}});
-      Session.set('editing_itemname', null);
-    },
-    cancel: function () {
-      Session.set('editing_itemname', null);
-    }
-  }));
-
-Template.render_item_data.events(okCancelEvents(
-  '#edittag-input',
-  {
-    ok: function (value) {
-      Nodes.update(this._id, {$addToSet: {tags: value}});
-      Session.set('editing_addtag', null);
-    },
-    cancel: function () {
-      Session.set('editing_addtag', null);
-    }
-  }));
-
-Template.render_item_data.helpers ({
-  doChildren : function() {
-    var ID = this._id;
-    return Nodes.find({parentCategory: ID})
-  },
-  RPNcalc: function() {
-    var RPN=parseInt(this.content);
-    var currentNode=this;
-    do 
-    {
-      if (currentNode.categoryName==="OCC") {
-        RPN*=parseInt(currentNode.content);
-      }
-      currentNode=Nodes.findOne({_id: currentNode.parentCategory});
-    }
-    while (!(currentNode.categoryName === "SEV"));
-    RPN*=parseInt(currentNode.content);
-    return RPN;
-    },
-  iconsAllowed: function() {
-    canCopy=false;
-    canDelete=false;
-    canClone=false;
-    canAdd=false;
-    canHide=false;
-
-    //  Turn on variables by field.
-    //  Then turn off by user permissions
-    var columnType=this.categoryName;
-    if ((columnType=== "DesignFunction")||(columnType === "FailureMode") || (columnType === "FailureEffect") || (columnType === "FailureCause"))
-    {
-      canCopy=true;
-      canDelete=true;  //need to ensure we don't delete if it's the only member.
-      canClone=true;
-      canAdd=true;
-      canHide=true;  //need to switch icon to eyes open if children are hidden.
-      }
-
-    // turn off by user permissions
-
-    return canCopy||canDelete||canClone||canAdd||canHide;
-  }
-});
 
 Template.iconography.helpers ({
   canAdd : function() {
