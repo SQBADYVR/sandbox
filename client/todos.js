@@ -12,7 +12,8 @@ var canHide=false;
 var firstFMode, firstEffect,firstCause;
 var FModeCount, EffectCount, CauseCount;
 
-var treeSchema = ["DesignFunction","FailureMode","FailureEffect","SEV","FailureCause","OCC","DesignControl","DET"];
+var treeSchema = ["DesignFunction","FailureMode","FailureEffect","SEV","Class","FailureCause","OCC","DesignControl","DET","RPN"];
+var headerText= ["Function","Potential Failure Mode", "Potential Effect(s) of Failure", "Sev","Class","Potential Cause(s) (Mechanisms) of Failure","OCC","Current Design Controls", "DET", "RPN"];
 var promptText = ["New function", "Failure Mode", "Effect of Failure", 10, "Potential Cause", 10, "Design Controls", 10 ];
 LastCategory="";
 stackOfNodes=[];
@@ -47,17 +48,20 @@ var countLeaf=function(currNode) {
   var Leafcounter=0;
  
   switch (currNode.categoryName) {
-    case treeSchema[4]:
     case treeSchema[5]:
-    case treeSchema[6]:{
+    case treeSchema[6]:
+    case treeSchema[7]:
+    case treeSchema[8]:
+    {
       return 1;
     }
-    case treeSchema[3]: {
+    case treeSchema[4]: {
       return currNode.subcategories.length;
     }
     case treeSchema[0]:
     case treeSchema[1]:
-    case treeSchema[2]: {
+    case treeSchema[2]:
+    case treeSchema[3]: {
       var kids=Nodes.findOne({_id: currNode._id}).subcategories;
       var toprun=kids.length;
       for (var i=0; i < toprun; i++) {
@@ -72,6 +76,14 @@ var countLeaf=function(currNode) {
 }
         };
 
+Template.populateHeader.helpers ({
+  getHeaders: function() {
+    return headerText;
+  },
+  headername: function() {
+    return this;
+  }
+})
 Template.processRow.helpers ({
   getNodeContext: function() {
     if (!((this===undefined) || (this ===null)))

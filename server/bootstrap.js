@@ -103,16 +103,25 @@ Meteor.startup(function () {
           });
           timestamp +=1;
           Nodes.update({_id: effects_id}, {$push: {subcategories: SEV_id}});
+           var class_id=Nodes.insert({
+            categoryName: "Class",
+            parentCategory: SEV_id,
+            subcategories: [],
+            content: " ",
+            timestamp: timestamp
+          });
+          timestamp +=1;
+          Nodes.update({_id: SEV_id}, {$push: {subcategories: class_id}});
           for ( l = 0; l < Math.floor(Math.random() * 5) + 1; l++) {
             var cause_id = Nodes.insert({
               categoryName: "FailureCause",
-              parentCategory: SEV_id,
+              parentCategory: class_id,
               subcategories: [],
               content: "Something broke " + l,
               timestamp: timestamp
             });
             timestamp+=1;
-            Nodes.update({_id: SEV_id}, {$push: {subcategories: cause_id}});
+            Nodes.update({_id: class_id}, {$push: {subcategories: cause_id}});
             var OCC_id=Nodes.insert({
               categoryName: "OCC",
               parentCategory: cause_id,
