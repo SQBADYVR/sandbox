@@ -23,13 +23,19 @@ stackOfNodes=[];
 var tempStack=[]
 
 Template.prepping.stuffArray=function() {
+  var i;
   rootNode = Nodes.findOne({categoryName: "FMEAroot"});
   currNode=rootNode.subcategories;
-  miniStuff(currNode);
-  tempStack=[];
+  console.log(currNode);
+  for (i=0; i<currNode.length;i++)
+    {
+    miniStuff(currNode);
+    currNode.shift;
+  }
 };
 
 var miniStuff=function(entryNode){
+    console.log(entryNode);
     var kids=Nodes.findOne({_id: entryNode[0]}).subcategories;
     var i;
     tempStack.push(entryNode);
@@ -125,7 +131,6 @@ Template.processRow.helpers ({
      return stackOfNodes;
   },
   rowList: function() {
-    console.log("Processing Row with :"+this);
     return(this);
   },
   countDET: function() {  //counts all the DETs (actually Causes) that are children of this node

@@ -63,7 +63,7 @@ Meteor.startup(function () {
      });
     DFMEAs.update({_id: dfmea_id}, {$push: {subcategories: topNode}});
     timestamp+=1;
-     for ( i = 0; i < Math.floor(Math.random() * 3) + 1; i++) {
+     for ( i = 0; i < Math.floor(Math.random() * 2) + 2; i++) {
       // Insert the functions
       var fctn_id = Nodes.insert({
         categoryName: "DesignFunction",
