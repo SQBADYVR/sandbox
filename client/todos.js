@@ -20,23 +20,27 @@ var promptText = ["New function", "Failure Mode", "Effect of Failure", 10, "Pote
 LastCategory="";
 NeedTRFlag=true;
 stackOfNodes=[];
+var tempStack=[]
 
 Template.prepping.stuffArray=function() {
   rootNode = Nodes.findOne({categoryName: "FMEAroot"});
   currNode=rootNode.subcategories;
   miniStuff(currNode);
+  tempStack=[];
 };
 
 var miniStuff=function(entryNode){
     var kids=Nodes.findOne({_id: entryNode[0]}).subcategories;
     var i;
-    stackOfNodes.push(entryNode);
+    tempStack.push(entryNode);
     while (kids.length>0)
       {
         i=[kids.shift()];
         miniStuff(i);
       };
-      };
+    if (tempStack.length>0) {stackOfNodes.push(tempStack)};
+    tempStack=[];
+};
 
 var createSubtree=function(parentNodeID) {
   var newNodeCategory=Nodes.findOne({_id:parentNodeID}).categoryName;  
@@ -99,6 +103,9 @@ var countLeaf=function(currNode) {
         };
 
 Template.processRow.helpers ({
+  displayThis: function() {
+    console.log(this);
+  },
   newRow: function() {
     if (NeedTRFlag)
     {
@@ -116,6 +123,10 @@ Template.processRow.helpers ({
   },
   stackOfNodes: function() {
      return stackOfNodes;
+  },
+  rowList: function() {
+    console.log("Processing Row with :"+this);
+    return(this);
   },
   countDET: function() {  //counts all the DETs (actually Causes) that are children of this node
     console.log("countDets on "+this[0]);
@@ -138,42 +149,11 @@ Template.processRow.helpers ({
 });
 
 Template.renderAlpha.helpers ({
-  newRow: function() {
-    if (NeedTRFlag)
-    {
-      NeedTRFlag=false;
-      return true;
-    }
-    else return false;
-  },
-  getNodeContext: function() {
-    if (!((this===undefined) || (this ===null)))
-    {
-      var newNode=Nodes.findOne({_id: this[0]});
-      return(newNode.content);
-    }
-  },
+ 
   stackOfNodes: function() {
-     return stackOfNodes;
+    return stackOfNodes;
   },
-  countDET: function() {  //counts all the DETs (actually Causes) that are children of this node
-    console.log("countDets on "+this[0]);
-    var temp = countLeaf(Nodes.findOne({_id:this[0]}));
-    console.log(temp);
-    if (temp===0)
-    {
-      console.log("Setting Flag");
-      NeedTRFlag=true;
-      return 1;
-    }
-    else
-    {
-     return temp;}
-  },
-  checkFlag: function() {
-    console.log("In checkFlag with result "+NeedTRFlag);
-    return NeedTRFlag;
-  }
+ 
 });
 
 

@@ -51,21 +51,20 @@
 
 <template name="renderAlpha">
  {{#each stackOfNodes}}
-    {{#if newRow}}
-    <tr>
+     <tr>
     {{>processRow}}
     </tr>
- {{/each}}
+  {{/each}}
 </template>
 
 <template name="processRow">
-  {{#each remainingList}}
-    {{#if checkFlag}}
+  {{displayThis}}
+  {{#each rowList}}
     <td rowspan={{countDET}}>
     {{getNodeContext}}
     </td>
-    {{/if}}
-  {{/each}}
+   {{/each}}
+  
 </template>
 
 <template name="renderGamma">
