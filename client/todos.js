@@ -1,10 +1,10 @@
-
+DFMEAs= new Meteor.Collection('dfmeas');
+Nodes=new Meteor.Collection('nodes');
   // Client-side JavaScript, bundled and sent to client.
 
 // Define Minimongo collections to match server/publish.js.
 Lists = new Meteor.Collection("lists");
-DFMEAs= new Meteor.Collection("dfmeas");
-Nodes = new Meteor.Collection("nodes");
+
 firstCauseFlag=false;
 lastWasCause=false;
 var canCopy=false;
@@ -18,8 +18,25 @@ var FModeCount, EffectCount, CauseCount;
 var treeSchema = ["DesignFunction","FailureMode","FailureEffect","SEV","FailureCause","OCC","DesignControl","DET"];
 var promptText = ["New function", "Failure Mode", "Effect of Failure", 10, "Potential Cause", 10, "Design Controls", 10 ];
 LastCategory="";
-NeedTRFlag=false;
+NeedTRFlag=true;
+stackOfNodes=[];
 
+Template.prepping.stuffArray=function() {
+  rootNode = Nodes.findOne({categoryName: "FMEAroot"});
+  currNode=rootNode.subcategories;
+  miniStuff(currNode);
+};
+
+var miniStuff=function(entryNode){
+    var kids=Nodes.findOne({_id: entryNode[0]}).subcategories;
+    var i;
+    stackOfNodes.push(entryNode);
+    while (kids.length>0)
+      {
+        i=[kids.shift()];
+        miniStuff(i);
+      };
+      };
 
 var createSubtree=function(parentNodeID) {
   var newNodeCategory=Nodes.findOne({_id:parentNodeID}).categoryName;  
@@ -58,8 +75,7 @@ var countLeaf=function(currNode) {
   switch (currNode.categoryName) {
     case treeSchema[4]:
     case treeSchema[5]:
-    case treeSchema[6] :
-    case treeSchema[7] : {
+    case treeSchema[6]:{
       return 1;
     }
     case treeSchema[3]: {
@@ -82,75 +98,81 @@ var countLeaf=function(currNode) {
 }
         };
 
-Template.renderBeta.helpers ({
-  doChildren : function() {
-    var ID = this._id;
-    console.log("in Beta");
-    console.log(this);
-    console.log(this.categoryName);
-    LastCategory=this.categoryName;
-    var retval = Nodes.find({parentCategory:ID});
-    return retval;
+Template.processRow.helpers ({
+  newRow: function() {
+    if (NeedTRFlag)
+    {
+      NeedTRFlag=false;
+      return true;
+    }
+    else return false;
   },
-  subcategories: function() {
-    console.log("in subcategories");
-    console.log(this.subcategories.length);
-    return this.subcategories.length;
+  getNodeContext: function() {
+    if (!((this===undefined) || (this ===null)))
+    {
+      var newNode=Nodes.findOne({_id: this[0]});
+      return(newNode.content);
+    }
   },
-  debug:function() {
-    console.log(this._id);
+  stackOfNodes: function() {
+     return stackOfNodes;
   },
-  isFirstThing: function() {
-    var newCategory=this.categoryName;
-    console.log(newCategory);
-    console.log(LastCategory);
-    var retval= (treeSchema.indexOf(newCategory)>treeSchema.indexOf(LastCategory));
-    LastCategory=newCategory;
-    console.log(retval);
-    console.log(this._id);
-    return (retval);
-    },
-  countDETs: function() {  //counts all the DETs (actually Causes) that are children of this node
-    var temp = countLeaf(Nodes.findOne({_id:this._id}));
-//    console.log(temp);
-    return temp;
+  countDET: function() {  //counts all the DETs (actually Causes) that are children of this node
+    console.log("countDets on "+this[0]);
+    var temp = countLeaf(Nodes.findOne({_id:this[0]}));
+    console.log(temp);
+    if (temp===0)
+    {
+      console.log("Setting Flag");
+      NeedTRFlag=true;
+      return 1;
+    }
+    else
+    {
+     return temp;}
+  },
+  checkFlag: function() {
+    console.log("In checkFlag with result "+NeedTRFlag);
+    return NeedTRFlag;
   }
 });
 
 Template.renderAlpha.helpers ({
-  doChildren : function() {
-    var ID = this._id;
-    console.log("in Alpha");
-    console.log(this);
-    console.log(this.categoryName);
-    LastCategory=this.categoryName;
-    var retval = Nodes.find({parentCategory:ID});
-    return retval;
+  newRow: function() {
+    if (NeedTRFlag)
+    {
+      NeedTRFlag=false;
+      return true;
+    }
+    else return false;
   },
-  subcategories: function() {
-    console.log("in subcategories");
-    console.log(this.subcategories.length);
-    return this.subcategories.length;
+  getNodeContext: function() {
+    if (!((this===undefined) || (this ===null)))
+    {
+      var newNode=Nodes.findOne({_id: this[0]});
+      return(newNode.content);
+    }
   },
-
-  debug:function() {
-    console.log(this._id);
+  stackOfNodes: function() {
+     return stackOfNodes;
   },
-  isFirstThing: function() {
-    var newCategory=this.categoryName;
-    console.log(newCategory);
-    console.log(LastCategory);
-    var retval= (treeSchema.indexOf(newCategory)>treeSchema.indexOf(LastCategory));
-    LastCategory=newCategory;
-    console.log(retval);
-    console.log(this._id);
-    return (retval);
-    },
-  countDETs: function() {  //counts all the DETs (actually Causes) that are children of this node
-    console.log(this._id);
-    var temp = countLeaf(Nodes.findOne({_id:this._id}));
+  countDET: function() {  //counts all the DETs (actually Causes) that are children of this node
+    console.log("countDets on "+this[0]);
+    var temp = countLeaf(Nodes.findOne({_id:this[0]}));
     console.log(temp);
-    return temp;
+    if (temp===0)
+    {
+      console.log("Setting Flag");
+      NeedTRFlag=true;
+      return 1;
+    }
+    else
+    {
+     return temp;}
+  },
+  checkFlag: function() {
+    console.log("In checkFlag with result "+NeedTRFlag);
+    return NeedTRFlag;
   }
 });
 

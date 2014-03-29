@@ -33,7 +33,7 @@
         <thead></thead>
         <tbody class="DFMEA-table">
         {{#each nodes}}
-          {{>renderBeta}}
+          {{>prepping}}
         {{/each}}
         </tbody>
         </table>
@@ -44,26 +44,28 @@
 </template>
 
 
-<!-- paint first row of remaining subtree's table -->
+<template name="prepping">
+{{stuffArray}}
+{{>renderAlpha}}
+</template>
+
 <template name="renderAlpha">
-  {{>displayNode}}
-  {{#if subcategories}}
-      {{> renderAlpha}}
-    {{/with}}
-  {{/if}}
+ {{#each stackOfNodes}}
+    {{#if newRow}}
+    <tr>
+    {{>processRow}}
+    </tr>
+ {{/each}}
 </template>
 
-
-<template name="displayNode">
-<td rowspan="{{countDET}}">
-{{content}}
-</td>
-</template>
-
-<template name-"renderBeta">
-  {{#each doChildren}}
-  {{> renderAlpha subcategory}}
-  ((/each))
+<template name="processRow">
+  {{#each remainingList}}
+    {{#if checkFlag}}
+    <td rowspan={{countDET}}>
+    {{getNodeContext}}
+    </td>
+    {{/if}}
+  {{/each}}
 </template>
 
 <template name="renderGamma">
