@@ -59,7 +59,7 @@
 
 <template name="processRow">
   {{#each rowList}}
-    <td rowspan={{countDET}}>
+    <td rowspan={{countDET}} class="display-{{getNodeType}}">
     {{getNodeContext}}
     </td>
    {{/each}}

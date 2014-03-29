@@ -5,9 +5,6 @@ Nodes=new Meteor.Collection('nodes');
 // Define Minimongo collections to match server/publish.js.
 Lists = new Meteor.Collection("lists");
 
-firstCauseFlag=false;
-lastWasCause=false;
-var canCopy=false;
 var canDelete=false;
 var canClone=false;
 var canAdd=false;
@@ -18,7 +15,6 @@ var FModeCount, EffectCount, CauseCount;
 var treeSchema = ["DesignFunction","FailureMode","FailureEffect","SEV","FailureCause","OCC","DesignControl","DET"];
 var promptText = ["New function", "Failure Mode", "Effect of Failure", 10, "Potential Cause", 10, "Design Controls", 10 ];
 LastCategory="";
-NeedTRFlag=true;
 stackOfNodes=[];
 var tempStack=[]
 
@@ -45,36 +41,6 @@ var miniStuff=function(entryNode){
     if (tempStack.length>0) {stackOfNodes.push(tempStack)};
     tempStack=[];
 };
-
-var createSubtree=function(parentNodeID) {
-  var newNodeCategory=Nodes.findOne({_id:parentNodeID}).categoryName;  
-  var breakFlag=false;
-  var i;
-  for (i=0; !breakFlag && (i<8); i+=1)
-  {
-    if (newNodeCategory === treeSchema[i])
-      breakFlag=true;
-    else
-      breakFlag=false;
-  }
-  i-=1;
-  var timestamp = (new Date()).getTime();
-  //i is now positioned to start making nodes
-  var oldParentID=parentNodeID;
-  for (;i<8;i+=1)
-  {
-    var newNode=Nodes.insert({
-       categoryName: treeSchema[i],
-       parentCategory: oldParentID,
-       subcategories: [],
-       content: promptText[i],
-       timestamp: timestamp 
-    });
-    timestamp+=1;
-    Nodes.update({_id:oldParentID},{$push: {subcategories: newNode._id}});
-    oldParentID=newNode._id;
-  };
-}
 
 var countLeaf=function(currNode) {
   
@@ -114,6 +80,13 @@ Template.processRow.helpers ({
       return(newNode.content);
     }
   },
+  getNodeType: function() {
+    if (!((this===undefined) || (this ===null)))
+    {
+      var newNode=Nodes.findOne({_id: this[0]});
+      return(newNode.categoryName);
+    }
+  },
   stackOfNodes: function() {
      return stackOfNodes;
   },
@@ -121,12 +94,9 @@ Template.processRow.helpers ({
     return(this);
   },
   countDET: function() {  //counts all the DETs (actually Causes) that are children of this node
-    console.log("countDets on "+this[0]);
     var temp = countLeaf(Nodes.findOne({_id:this[0]}));
-    console.log(temp);
     if (temp===0)
     {
-      console.log("Setting Flag");
       NeedTRFlag=true;
       return 1;
     }
@@ -137,8 +107,7 @@ Template.processRow.helpers ({
 });
 
 Template.renderAlpha.helpers ({
- 
-  stackOfNodes: function() {
+   stackOfNodes: function() {
     return stackOfNodes;
   },
  
@@ -186,8 +155,6 @@ Deps.autorun(function () {
   else
     nodesHandle = null;
 });
-
-//var nodesHandle = null;
 
 ////////// Helpers for in-place editing //////////
 
@@ -273,8 +240,6 @@ Template.nodes.nodes = function () {
   var nodelist=Nodes.find({parentCategory: parent});
   return nodelist;
 };
-
-
 
 Template.iconography.helpers ({
   canAdd : function() {

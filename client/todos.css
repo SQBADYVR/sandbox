@@ -39,239 +39,43 @@ h3 {
     text-align: center;
 }
 
-.DFMEA-pane {
-    position:relative;
-    height:100%;
-}
-
-.node-DesignFunction{
-    display: block;
-    height:100%;
-    border-bottom: 1px solid #333333;
-}
-
-.node-DesignFunction-text{
-    display: block;
-    height:100%;
-
-}
-.node-FailureMode-text{
-    display: block;
-    height:100%;
-    padding-left: 3px;
-}
-
 .display-DesignFunction{
-    display: inline-block;
-    vertical-align: top;
-    width: 138px;
-    height:100%;
-}
-
-.DesignFunction-pane {
-    display:inline-block;
-    vertical-align: top;
-    height:100%;
-    min-width: 620px;
-    border-left: solid 1px #333333;
-}
-
-.node-FailureMode{
-    display: block;
-    height:100%;
-    border-bottom: 1px solid #333333;
-}
-
-.node-FailureMode:last-child {
-    border-bottom: none;
+   
 }
 
 .display-FailureMode {
-    display: inline-block;
-    vertical-align: top;
-    width: 138px;
-    height:100%;
-}
-
-.FailureMode-pane{
-    display: inline-block;
-    height:100%;
-    min-width: 500px;
-    border-left: 1px solid #333333;
-}
-
-.node-FailureEffect-text{
-    display: block;
-    height:100%;
-    padding-left: 3px;
-}
-
-.node-FailureEffect{
-    display: block;
-    height:100%;
-    border-bottom: 1px solid #333333;
-}
-
-.node-FailureEffect:last-child {
-    border-bottom:none;
+    
 }
 
 .display-FailureEffect {
-    display: inline-block;
-    vertical-align: top;
-    width: 138px;
-    height:100%;
-}
-
-.FailureEffect-pane{
-    display: inline-block;
-    height:100%;
-    min-width: 380px;
-    border-left: solid 1px #333333;
-}
-
-.node-FailureCause {
-    display: block;
-    height:100%;
-    border-bottom: 1px solid #333333;
-}
-.node-FailureCause-text{
-    display: block;
-    height:100%;
-    padding-left: 3px;
-}
-.node-FailureCause:last-child {
-    border-bottom: none;
-}
-
-.node-FailureCause:nth-child(2) {
-    display:inline-block;
+    
 }
 
 .display-FailureCause {
-    display: inline-block;
-    vertical-align: top;
-    width: 138px;
-    height:100%;
-}
-
-.FailureCause-pane {
-    display: inline-block;
-    height:100%;
-    position: relative;
-    min-width: 220px;
-    border-left: solid 1px #333333;
-}
-
-.node-DesignControl {
-
-    display:inline-block;
-    border-bottom: 1px solid #333333;
-}
-
-.node-DesignControl:last-child {
-    border-bottom: none;
+   
 }
 
 .display-DesignControl {
-    display: inline-block;
-    width: 127px;
-    border-right: 1px solid #333333 ;
 
-}
-.node-DesignControl-text{
-    display: block;
-    height:100%;
-    padding-left: 3px;
+
 }
 
 .DesignControl-pane {
-    display: inline-block;
-    height:100%;
-    position: relative;
-    min-width: 60px;
-    vertical-align: top;
+   
     }
 
-.node-DET {
-    width: 20px;
-    min-height: 100%;
-    display: inline-block;
-    vertical-align: top;
-}
-
-.node-SEV-text{
-    display: block;
-    height:100%;
-    padding-left: 3px;
-    text-align: center;
-}
-
-.node-OCC-text{
-    display: block;
-    height:100%;
-    padding-left: 3px;
-    text-align: center;
-}
-.node-OCC {
-    min-height: 100%;
-    display: block;
-}
-
-.node-SEV {
-    display: block;
-    min-height: 100%;
-    vertical-align: top;
-}
-
-.SEV-pane {
-    display: inline-block;
-    height:100%;
-    position: relative;
-    min-width: 340px;
-    border-left: solid 1px #333333;
-    }
-
-.OCC-pane {
-    display: inline-block;
-    height:100%;
-    position: relative;
-    border-left: solid 1px #333333;
-}
 
 .display-SEV {
-    vertical-align: top;
-    display: inline-block;
-    width: 20px;
+ 
 }
 
 .display-OCC {
-    vertical-align: top;
-    width: 20px;
-    display: inline-block;
+  
 }
 
 .display-DET {
-    vertical-align: top;
-    width: 20px;
-    display: inline-block;
-    border-right: 1px solid #333333;
-}
-.DET-pane {
-    display: inline-block;
-    height:100%;
-    position: relative;
-    vertical-align: top;
-}
 
-.node-DET-text{
-    display: block;
-    height:100%;
-    padding-left: 3px;
-    vertical-align: top;
-    text-align: center;
 }
-
 #top-tag-filter, #main-pane, #side-pane, #bottom-pane {
     position: absolute;
     left: 0;
