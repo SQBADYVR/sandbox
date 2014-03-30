@@ -69,13 +69,12 @@
 
 <template name="processRow">
   {{#each rowList}}
+    <td rowspan={{countDET}} class="display display-{{getNodeType}}">
     {{#if editing}}
-      <div id="new-node-box">
-          <input type="text" id="item-input" placeholder="New item" />
-      </div>
+            <input type="text" class="item-input" id="item-input" value="{{getNodeContext}}" />
     {{else}}
-      <td rowspan={{countDET}} class="display-{{getNodeType}}">
       {{getNodeContext}}
+    {{/if}}
        <div class="icon-set">
          {{>iconography}}
        </div>
@@ -85,7 +84,6 @@
         {{RPNcalc}}
         </td>
       {{/if}}
-   {{/if}}
   {{/each}}
 </template>
 

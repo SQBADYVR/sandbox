@@ -77,14 +77,17 @@ div.header-notUsed
     font-size: 13px;
     color: #039;
     background: #b9c9fe;
+    border-right: 1px solid #333333;
 }
 #rounded-corner td
 {
     padding: 8px;
     background: #e8edff;
-    border-top: 1px solid #333333;
+    border-top: 1px solid #666666;
+    border-right: 1px solid #cccccc;
     color: #669;
 }
+
 #rounded-corner tfoot td.rounded-foot-left
 {
     background: #e8edff url('table-images/botleft.png') left bottom no-repeat;
@@ -119,6 +122,10 @@ div.header-notUsed
 
 .display-SEV, .display-OCC, .display-RPN, .display-DET{
  text-align:center;
+}
+
+#rounded-corner td .display-DET {
+    border-right: none;
 }
 
 #top-tag-filter, #main-pane, #side-pane, #bottom-pane {
@@ -369,7 +376,7 @@ a.login-link-test:active {
     }
 
 #rounded-corner tbody td .display-RPN:hover {
-    background: #b9c9fe;
+    background: #e8edff;
 }
 
 #rounded-corner tbody td:hover 

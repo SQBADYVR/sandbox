@@ -3,7 +3,7 @@ Nodes=new Meteor.Collection('nodes');
   // Client-side JavaScript, bundled and sent to client.
 
 // Define Minimongo collections to match server/publish.js.
-Lists = new Meteor.Collection("lists");
+//Lists = new Meteor.Collection("lists");
 
 var canDelete=false;
 var canClone=false;
@@ -14,13 +14,39 @@ var FModeCount, EffectCount, CauseCount;
 
 var treeSchema = ["DesignFunction","FailureMode","FailureEffect","SEV","Class","FailureCause","OCC","DesignControl","DET","RPN"];
 var headerText= ["Function","Potential Failure Mode", "Potential Effect(s) of Failure", "Sev","Class","Potential Cause(s) (Mechanisms) of Failure","OCC","Current Design Controls", "DET", "RPN"];
-var promptText = ["New function", "Failure Mode", "Effect of Failure", 10, "Potential Cause", 10, "Design Controls", 10 ];
+var promptText = ["New function", "Failure Mode", "Effect of Failure", 10, "  ", "Potential Cause", 10, "Design Controls", 10 ];
 LastCategory="";
 stackOfNodes=[];
 var tempStack=[]
 
+var createSubtree=function(parentNodeID) {
+  var newNodeCategory=Nodes.findOne({_id:parentNodeID}).categoryName;  
+  var i=promptText.indexOf(newNodeCategory);
+  if (!(i===undefined))
+  {
+  var timestamp = (new Date()).getTime();
+  //i is now positioned to start making nodes
+  var oldParentID=parentNodeID;
+  for (j=i;j<9;j+=1)
+  {
+    var newNode=Nodes.insert({
+       categoryName: treeSchema[i],
+       parentCategory: oldParentID,
+       subcategories: [],
+       content: promptText[j],
+       timestamp: timestamp 
+    });
+    timestamp+=1;
+    Nodes.update({_id:oldParentID},{$push: {subcategories: newNode._id}});
+    oldParentID=newNode._id;
+  }
+  }
+  ;
+}
+
 Template.prepping.stuffArray=function() {
   var i;
+  stackOfNodes=[];
   rootNode = Nodes.findOne({categoryName: "FMEAroot"});
   currNode=rootNode.subcategories;
   for (i=0; i<currNode.length;i++)
@@ -75,7 +101,44 @@ var countLeaf=function(currNode) {
 
     } return 0;
 }};
+////////// Helpers for in-place editing //////////
 
+// Returns an event map that handles the "escape" and "return" keys and
+// "blur" events on a text input (given by selector) and interprets them
+// as "ok" or "cancel".
+var okCancelEvents = function (selector, callbacks) {
+  var ok = callbacks.ok || function () {};
+  var cancel = callbacks.cancel || function () {};
+
+  var events = {};
+  events['keyup '+selector+', keydown '+selector+', focusout '+selector] =
+    function (evt) {
+      if (evt.type === "keydown" && evt.which === 27) {
+        // escape = cancel
+        cancel.call(this, evt);
+
+      } else if (evt.type === "keyup" && evt.which === 13 ||
+                 evt.type === "focusout") {
+        // blur/return/enter = ok/submit if non-empty
+        var value = String(evt.target.value || "");
+        if (value)
+          ok.call(this, value, evt);
+        else
+          cancel.call(this, evt);
+      }
+    };
+
+  return events;
+};
+
+var activateInput = function (input) {
+  input.focus();
+  input.select();
+};
+
+Template.lists.loading = function () {
+  return !dfmeaHandle.ready();
+};
 Template.populateHeader.helpers ({
   getHeaders: function() {
     return headerText;
@@ -135,7 +198,7 @@ Template.processRow.helpers ({
     return RPN;
     },
   editing: function () {
-      return false;
+      return Session.equals('editing_itemname', this[0]);
     }
 });
 
@@ -148,9 +211,8 @@ Template.processRow.events({
     return null;
   },
 
-  'dblclick .display .todo-text': function (evt, tmpl) {
-    console.log(this);
-    Session.set('editing_itemname', this._id);
+  'dblclick .display': function (evt, tmpl) {
+    Session.set('editing_itemname', this[0]);
     Deps.flush(); // update DOM before focus
     activateInput(tmpl.find("#item-input"));
   }
@@ -163,6 +225,17 @@ Template.renderAlpha.helpers ({
  
 });
 
+Template.processRow.events(okCancelEvents(
+  '#item-input',
+  {
+    ok: function (value) {
+      Nodes.update(this[0], {$set: {content: value}});
+      Session.set('editing_itemname', null);
+    },
+    cancel: function () {
+      Session.set('editing_itemname', null);
+    }
+  }));
 
 Session.set('dfmea_id',null);
 
@@ -206,46 +279,6 @@ Deps.autorun(function () {
     nodesHandle = null;
 });
 
-////////// Helpers for in-place editing //////////
-
-// Returns an event map that handles the "escape" and "return" keys and
-// "blur" events on a text input (given by selector) and interprets them
-// as "ok" or "cancel".
-var okCancelEvents = function (selector, callbacks) {
-  var ok = callbacks.ok || function () {};
-  var cancel = callbacks.cancel || function () {};
-
-  var events = {};
-  events['keyup '+selector+', keydown '+selector+', focusout '+selector] =
-    function (evt) {
-      if (evt.type === "keydown" && evt.which === 27) {
-        // escape = cancel
-        cancel.call(this, evt);
-
-      } else if (evt.type === "keyup" && evt.which === 13 ||
-                 evt.type === "focusout") {
-        // blur/return/enter = ok/submit if non-empty
-        var value = String(evt.target.value || "");
-        if (value)
-          ok.call(this, value, evt);
-        else
-          cancel.call(this, evt);
-      }
-    };
-
-  return events;
-};
-
-var activateInput = function (input) {
-  input.focus();
-  input.select();
-};
-
-Template.lists.loading = function () {
-  return !dfmeaHandle.ready();
-};
-
-
 ////////// nodes //////////
 var nodesHandle=null;
 Template.nodes.loading = function () {
@@ -257,7 +290,7 @@ Template.nodes.any_list_selected = function () {
 };
 
 Template.nodes.events(okCancelEvents(
-  '#new-node',
+  '#new-item',
   {
     ok: function (text, evt) {
       var tag = Session.get('tag_filter');
@@ -307,12 +340,9 @@ Template.iconography.helpers ({
     return true;
   else return false;
   },
-
   canClone : function() {
     // not implemented yet
     return false;
-
-
    if ((lastCategory=== "DesignFunction")||(lastCategory === "FailureMode") || (lastCategory === "FailureEffect") || (lastCategory === "FailureCause"))
     //add user permission check 
     return true;
@@ -331,7 +361,6 @@ Template.iconography.helpers ({
     //not implemented yet
     return false;
 //
-
   if ((lastCategory=== "DesignFunction")||(lastCategory === "FailureMode") || (lastCategory === "FailureEffect") || (lastCategory === "FailureCause"))
     //add user permission check 
     return true;
