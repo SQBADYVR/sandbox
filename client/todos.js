@@ -21,27 +21,35 @@ var tempStack=[]
 
 var createSubtree=function(parentNodeID) {
   var newNodeCategory=Nodes.findOne({_id:parentNodeID}).categoryName;  
-  var i=promptText.indexOf(newNodeCategory);
+  var i=treeSchema.indexOf(newNodeCategory);
+  console.log("in createSubtree");
+  console.log(parentNodeID);
+  console.log(newNodeCategory);
+  console.log(i);
   if (!(i===undefined))
-  {
-  var timestamp = (new Date()).getTime();
-  //i is now positioned to start making nodes
-  var oldParentID=parentNodeID;
-  for (j=i;j<9;j+=1)
-  {
-    var newNode=Nodes.insert({
-       categoryName: treeSchema[i],
-       parentCategory: oldParentID,
-       subcategories: [],
-       content: promptText[j],
-       timestamp: timestamp 
-    });
-    timestamp+=1;
-    Nodes.update({_id:oldParentID},{$push: {subcategories: newNode._id}});
-    oldParentID=newNode._id;
-  }
-  }
-  ;
+    {
+   var timestamp = (new Date()).getTime();
+    //i is now positioned to start making nodes
+    var oldParentID=Nodes.findOne({subcategories:parentNodeID})._id;
+    console.log(treeSchema[i])
+    console.log (oldParentID);
+    for (j=i;j<9;j+=1)
+      {
+      var newNode=Nodes.insert({
+         categoryName: treeSchema[j],
+         parentCategory: oldParentID,
+         subcategories: [],
+         content: promptText[j],
+         timestamp: timestamp 
+        });
+      timestamp+=1;
+      console.log("got tree created...linking it in");
+      console.log(oldParentID);
+      console.log(newNode);
+      Nodes.update({_id:oldParentID},{$push: {subcategories: newNode}});
+      oldParentID=newNode;
+      }
+    };
 }
 
 Template.prepping.stuffArray=function() {
@@ -199,7 +207,17 @@ Template.processRow.helpers ({
     },
   editing: function () {
       return Session.equals('editing_itemname', this[0]);
+    },
+  numedit: function() {
+   if (!((this===undefined) || (this ===null)))
+    {
+      var newNode=Nodes.findOne({_id: this[0]});
+      lastCategory=newNode.categoryName;
+      if ((newNode.categoryName==="DET") || (newNode.categoryName==="OCC") || (newNode.categoryName==="SEV"))
+      return true;
     }
+    return false;
+  }
 });
 
 Template.processRow.events({
@@ -324,6 +342,26 @@ Template.nodes.nodes = function () {
   return nodelist;
 };
 
+Template.iconography.events({
+  'click .btn-add': function () {
+    console.log(this);
+    createSubtree(this[0])
+    return null;
+  },
+
+  'click .destroy': function () {
+    return null;
+  },
+
+});
+
+Template.renderAlpha.helpers ({
+   stackOfNodes: function() {
+    return stackOfNodes;
+  }
+ 
+});
+
 Template.iconography.helpers ({
   canAdd : function() {
    if ((lastCategory=== "DesignFunction")||(lastCategory === "FailureMode") || (lastCategory === "FailureEffect") || (lastCategory === "FailureCause"))
@@ -365,6 +403,14 @@ Template.iconography.helpers ({
     //add user permission check 
     return true;
   else return false;
+  },
+  getNodeType: function() {
+    if (!((this===undefined) || (this ===null)))
+    {
+      var newNode=Nodes.findOne({_id: this[0]});
+      var temp=treeSchema.indexOf(newNode.categoryName);
+      return(promptText[temp]);
+    }
   }
 });
 ////////// Tag Filter //////////

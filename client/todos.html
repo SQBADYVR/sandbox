@@ -71,7 +71,22 @@
   {{#each rowList}}
     <td rowspan={{countDET}} class="display display-{{getNodeType}}">
     {{#if editing}}
+      {{#if numedit}}
+        <select name="{{getNodeType}}" id="item-input" class="item-input">
+          <option value="10">10</option>
+          <option value="9">9</option>
+          <option value="8">8</option>
+          <option value="7">7</option>
+          <option value="6">6</option>
+          <option value="5">5</option>
+          <option value="4">4</option>
+          <option value="3">3</option>
+          <option value="2">2</option>
+          <option value="1">1</option>
+        </select>
+    {{else}}
             <input type="text" class="item-input" id="item-input" value="{{getNodeContext}}" />
+      {{/if}}
     {{else}}
       {{getNodeContext}}
     {{/if}}
@@ -100,7 +115,7 @@
 
 <template name="iconography">
   {{#if canAdd}}
-    <button type="button" class="btn btn-success btn-xs"><span class="glyphicon glyphicon-plus" </span></button>
+    <button type="button" class="btn btn-add btn-success btn-xs"><span title="Add new {{getNodeType}} after this one" class="glyphicon glyphicon-plus" </span></button>
   {{/if}}
   {{#if canCopy}}
     <button type="button" class="btn btn-success btn-xs"><span class="glyphicon glyphicon-heart"></span></button>
@@ -109,7 +124,7 @@
     <button type="button" class="btn btn-success btn-xs" disabled="disabled"><span class="glyphicon glyphicon-link"></span></button>
   {{/if}}
   {{#if canDelete}}
-    <button type="button" class="btn btn-danger btn-xs"><span class="glyphicon glyphicon-trash"></span></button>
+    <button type="button" class="btn btn-remove btn-danger btn-xs"><span class="glyphicon glyphicon-trash"></span></button>
   {{/if}}
   {{#if canHide}}
     <button type="button" class="btn btn-success btn-xs" disabled="disabled"><span class="glyphicon glyphicon-eye-close"></span></button>
