@@ -120,7 +120,7 @@ div.header-notUsed
 
 }
 
-.display-SEV, .display-OCC, .display-RPN, .display-DET{
+.display-SEV, .display-OCC, .display-RPN, .display-DET, .display-Class{
  text-align:center;
 }
 
@@ -375,11 +375,12 @@ a.login-link-test:active {
     color: #ffffff;
     }
 
-#rounded-corner tbody td .display-RPN:hover {
-    background: #e8edff;
-}
 
 #rounded-corner tbody td:hover 
 {
     background: #d0dafd;
+}
+
+#rounded-corner tbody td .display-RPN:hover {
+    background: #e8edff;
 }

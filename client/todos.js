@@ -22,17 +22,11 @@ var tempStack=[]
 var createSubtree=function(parentNodeID) {
   var newNodeCategory=Nodes.findOne({_id:parentNodeID}).categoryName;  
   var i=treeSchema.indexOf(newNodeCategory);
-  console.log("in createSubtree");
-  console.log(parentNodeID);
-  console.log(newNodeCategory);
-  console.log(i);
   if (!(i===undefined))
     {
    var timestamp = (new Date()).getTime();
     //i is now positioned to start making nodes
     var oldParentID=Nodes.findOne({subcategories:parentNodeID})._id;
-    console.log(treeSchema[i])
-    console.log (oldParentID);
     for (j=i;j<9;j+=1)
       {
       var newNode=Nodes.insert({
@@ -43,13 +37,27 @@ var createSubtree=function(parentNodeID) {
          timestamp: timestamp 
         });
       timestamp+=1;
-      console.log("got tree created...linking it in");
-      console.log(oldParentID);
-      console.log(newNode);
       Nodes.update({_id:oldParentID},{$push: {subcategories: newNode}});
       oldParentID=newNode;
       }
     };
+}
+
+var destroyTree=function(currentNodeID)
+{
+  console.log(currentNodeID);
+  var kids=Nodes.findOne({_id:currentNodeID}).subcategories;
+  console.log(kids);
+  if (kids.length > 0)
+    for (i=1; i<kids.length; i++)
+      { 
+      console.log(kids[i]);
+      destroyTree(kids[i]);
+      //destroy parent link;
+      }
+  console.log (Nodes.findOne({subcategories:currentNodeID}));
+  Nodes.update({subcategories: currentNodeID},{subcategories: {$pull: currentNodeID}});
+  Nodes.remove({_id: currentNodeID});
 }
 
 Template.prepping.stuffArray=function() {
@@ -344,12 +352,13 @@ Template.nodes.nodes = function () {
 
 Template.iconography.events({
   'click .btn-add': function () {
-    console.log(this);
-    createSubtree(this[0])
+    createSubtree(this[0]);
+    Deps.flush();
     return null;
   },
-
-  'click .destroy': function () {
+  'click .btn-remove': function () {
+    destroyTree(this[0]);
+    Deps.flush();
     return null;
   },
 
