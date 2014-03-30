@@ -46,6 +46,13 @@ table {
     width: 100%;    
 }
 
+div.header-notUsed
+  {
+  transform:rotate(90deg);
+  -ms-transform:rotate(90deg); /* IE 9 */
+  -webkit-transform:rotate(90deg); /* Opera, Chrome, and Safari */
+}
+
 #rounded-corner
 {
     font-family: "Lucida Sans Unicode", "Lucida Grande", Sans-Serif;
@@ -86,10 +93,7 @@ table {
 {
     background: #e8edff url('table-images/botright.png') right bottom no-repeat;
 }
-#rounded-corner tbody td:hover 
-{
-    background: #d0dafd;
-}
+
 
 
 
@@ -352,9 +356,9 @@ table {
 
 .icon-set {
    padding: 2px;
-   position: absolute;
-   bottom: 0px;
-}
+   white-space: nowrap;
+   vertical-align: bottom;
+ }
 
 .login-link-text {
     color: #999;
@@ -363,3 +367,12 @@ table {
 a.login-link-test:active {
     color: #ffffff;
     }
+
+#rounded-corner tbody td .display-RPN:hover {
+    background: #b9c9fe;
+}
+
+#rounded-corner tbody td:hover 
+{
+    background: #d0dafd;
+}

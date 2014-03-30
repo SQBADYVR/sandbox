@@ -42,6 +42,7 @@ var miniStuff=function(entryNode){
     if (tempStack.length>0) {stackOfNodes.push(tempStack)};
     tempStack=[];
 };
+ 
 
 var countLeaf=function(currNode) {
   
@@ -73,8 +74,7 @@ var countLeaf=function(currNode) {
     default: {
 
     } return 0;
-}
-        };
+}};
 
 Template.populateHeader.helpers ({
   getHeaders: function() {
@@ -134,31 +134,32 @@ Template.processRow.helpers ({
     RPN*=parseInt(currentNode.content);
     return RPN;
     },
-  iconsAllowed: function() {
-    canCopy=false;
-    canDelete=false;
-    canClone=false;
-    canAdd=false;
-    canHide=false;
+  editing: function () {
+      return false;
+    }
+});
 
-    //  Turn on variables by field.
-    //  Then turn off by user permissions
-    var columnType=this.categoryName;
-    if ((columnType=== "DesignFunction")||(columnType === "FailureMode") || (columnType === "FailureEffect") || (columnType === "FailureCause"))
-    {
-      canCopy=true;
-      canDelete=true;  //need to ensure we don't delete if it's the only member.
-      canClone=true;
-      canAdd=true;
-      canHide=true;  //need to switch icon to eyes open if children are hidden.
-      }
+Template.processRow.events({
+  'click .check': function () {
+    return null;
+  },
 
-}});
+  'click .destroy': function () {
+    return null;
+  },
+
+  'dblclick .display .todo-text': function (evt, tmpl) {
+    console.log(this);
+    Session.set('editing_itemname', this._id);
+    Deps.flush(); // update DOM before focus
+    activateInput(tmpl.find("#item-input"));
+  }
+});
 
 Template.renderAlpha.helpers ({
    stackOfNodes: function() {
     return stackOfNodes;
-  },
+  }
  
 });
 
@@ -292,20 +293,49 @@ Template.nodes.nodes = function () {
 
 Template.iconography.helpers ({
   canAdd : function() {
-    console.log(canAdd);
-    return (canAdd);
+   if ((lastCategory=== "DesignFunction")||(lastCategory === "FailureMode") || (lastCategory === "FailureEffect") || (lastCategory === "FailureCause"))
+    //add user permission check 
+    return true;
+  else return false;
   },
   canCopy : function() {
-    return (canCopy);
+    // not implemented yet
+    return false;
+
+    if ((lastCategory=== "DesignFunction")||(lastCategory === "FailureMode") || (lastCategory === "FailureEffect") || (lastCategory === "FailureCause"))
+    //add user permission check 
+    return true;
+  else return false;
   },
+
   canClone : function() {
-    return (canClone);
+    // not implemented yet
+    return false;
+
+
+   if ((lastCategory=== "DesignFunction")||(lastCategory === "FailureMode") || (lastCategory === "FailureEffect") || (lastCategory === "FailureCause"))
+    //add user permission check 
+    return true;
+  else return false;
   },
   canDelete : function() {
-    return (canDelete);
+    if ((lastCategory=== "DesignFunction")||(lastCategory === "FailureMode") || (lastCategory === "FailureEffect") || (lastCategory === "FailureCause"))
+    {
+      var parentNode=Nodes.findOne({subcategories:this[0]});
+      if (!(parentNode === undefined) && (parentNode.subcategories.length>1))
+        return true;
+      };
+    return false;
   },
   canHide : function() {
-    return (canHide);
+    //not implemented yet
+    return false;
+//
+
+  if ((lastCategory=== "DesignFunction")||(lastCategory === "FailureMode") || (lastCategory === "FailureEffect") || (lastCategory === "FailureCause"))
+    //add user permission check 
+    return true;
+  else return false;
   }
 });
 ////////// Tag Filter //////////

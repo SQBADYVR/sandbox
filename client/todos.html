@@ -25,9 +25,7 @@
       {{#if loading}}
         Loading...
       {{else}}
-        {{!--+<div id="new-node-box">
-          <input type="text" id="new-node" placeholder="New item" />
-        </div>--}}
+       
         <div class="DFMEA_pane">
         <table id="rounded-corner">
         <thead class="fixedheader">
@@ -48,7 +46,9 @@
 <template name="populateHeader">
   {{#each getHeaders}}
     <th>
+    <div class="header-{{headername}}">
     {{headername}}
+    </div>
     </th>
   {{/each}}
 </template>
@@ -69,15 +69,24 @@
 
 <template name="processRow">
   {{#each rowList}}
-    <td rowspan={{countDET}} class="display-{{getNodeType}}">
-    {{getNodeContext}}
-    </td>
-    {{#if DETcell}}
-    <td class="display-RPN">
-    {{RPNcalc}}
-    </td>
-    {{/if}}
-   {{/each}}
+    {{#if editing}}
+      <div id="new-node-box">
+          <input type="text" id="item-input" placeholder="New item" />
+      </div>
+    {{else}}
+      <td rowspan={{countDET}} class="display-{{getNodeType}}">
+      {{getNodeContext}}
+       <div class="icon-set">
+         {{>iconography}}
+       </div>
+      </td>
+      {{#if DETcell}}
+        <td class="display-RPN">
+        {{RPNcalc}}
+        </td>
+      {{/if}}
+   {{/if}}
+  {{/each}}
 </template>
 
 <template name="tag_filter">
